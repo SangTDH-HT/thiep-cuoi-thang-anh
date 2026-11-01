@@ -215,9 +215,30 @@
     $('#nhap-ten').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); moThiep(); } });
   }
 
+  // Toàn màn hình, ẩn thanh địa chỉ (Android, máy tính; iPhone không cho trang web làm việc này)
+  function toanManHinh() {
+    const el = document.documentElement;
+    const yeuCau = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (!yeuCau || document.fullscreenElement || document.webkitFullscreenElement) return;
+    try {
+      const p = yeuCau.call(el, { navigationUI: 'hide' });
+      if (p && p.catch) p.catch(() => {});
+    } catch (e) { /* trình duyệt không cho */ }
+  }
+  function thoatToanManHinh() {
+    const thoat = document.exitFullscreen || document.webkitExitFullscreen;
+    if (!thoat || !(document.fullscreenElement || document.webkitFullscreenElement)) return;
+    try {
+      const p = thoat.call(document);
+      if (p && p.catch) p.catch(() => {});
+    } catch (e) { /* bỏ qua */ }
+  }
+
+  let lanMo = 0;
   async function moThiep() {
     if (dangMo) return;
     dangMo = true;
+    toanManHinh();
     if (CFG.nhac !== false) { try { HopNhac.batDau(); } catch (e) { /* trình duyệt không cho phát */ } }
     rung(18);
     const the = $('#bia-the');
@@ -251,7 +272,56 @@
     HatBay.nguon($$('.thiep .bca'));
     if (CFG.nhac !== false) $('#nut-nhac').hidden = false;
     capNhatNutNhac();
-    batTheoDoi();
+    if (++lanMo === 1) batTheoDoi();
+    else capNhatCuon();
+  }
+
+  // Gửi xác nhận xong: thử đóng trang; trình duyệt không cho đóng thì gập thiệp lại
+  let henDong = 0;
+  function henDongThiep(giay) {
+    huyDongThiep();
+    let con = giay;
+    const chu = $('#tu-dong');
+    const ve = () => { chu.textContent = `Thiệp tự đóng sau ${con} giây`; };
+    ve();
+    chu.hidden = false;
+    $('#o-lai').hidden = false;
+    henDong = setInterval(() => {
+      if (--con <= 0) { huyDongThiep(); dongThiep(); } else ve();
+    }, 1000);
+  }
+  function huyDongThiep() {
+    clearInterval(henDong);
+    henDong = 0;
+    $('#tu-dong').hidden = true;
+    $('#o-lai').hidden = true;
+  }
+
+  async function dongThiep() {
+    HopNhac.dung();
+    thoatToanManHinh();
+    try { window.close(); } catch (e) { /* chỉ đóng được cửa sổ do script mở */ }
+    await cho(400);
+    const cu = kho.doc('xn');
+    $('#loi-chao').textContent = cu && cu.den === 'Có'
+      ? 'Hẹn gặp Quý khách ngày 28.11!'
+      : 'Cảm ơn Quý khách đã báo tin.';
+    $('#loi-chao').hidden = false;
+    $('.niem-chu').textContent = 'Mở lại thiệp';
+    $('#nut-mo').setAttribute('aria-label', 'Mở lại thiệp');
+    $('#nut-nhac').hidden = true;
+    document.body.classList.remove('phao-hoa');
+    HatBay.datManDem(0);
+    daMo = false;
+    const b = document.body;
+    b.classList.add('dang-dong');
+    b.classList.remove('mo');
+    void b.offsetWidth;
+    b.classList.remove('dang-mo', 'loe-sang');
+    await cho(2100);
+    b.classList.add('dong');
+    b.classList.remove('dang-dong');
+    dangMo = false;
   }
 
   function chayMoDau() {
@@ -285,19 +355,20 @@
     }
   };
 
-  let daBan = false, chanPhaoDen = 0;
-  function phaoHoa() {
+  // Pháo hoa trên màn tối; xongPhaoCuoi: đã bắn màn cuối (cuộn tới chữ ký hoặc lúc gửi xác nhận)
+  let daBan = false, xongPhaoCuoi = false;
+  function phaoHoa(o) {
+    o = o || {};
     if (daBan || giam) return;
-    // Vừa đóng dấu xác nhận thì để con dấu diễn xong rồi mới bắn pháo hoa
-    if (Date.now() < chanPhaoDen) { setTimeout(phaoHoa, chanPhaoDen - Date.now() + 100); return; }
     daBan = true;
+    xongPhaoCuoi = true;
     document.body.classList.add('phao-hoa');
     HatBay.datManDem(1);
-    setTimeout(() => HatBay.phao({ lan: 7, nhip: 560 }), 500);
+    setTimeout(() => HatBay.phao({ lan: o.lan || 7, nhip: o.nhip || 560 }), 500);
     setTimeout(() => {
       document.body.classList.remove('phao-hoa');
       setTimeout(() => { HatBay.datManDem(0); daBan = false; }, 1200);
-    }, 7000);
+    }, o.giu || 7000);
   }
 
   function batTheoDoi() {
@@ -312,10 +383,12 @@
     $$('[data-hien]').forEach(el => io.observe(el));
     // Pháo hoa khi chữ ký cuối thiệp lọt hẳn vào màn hình
     const ioPhao = new IntersectionObserver(ds => {
-      if (ds.some(d => d.isIntersecting)) { ioPhao.disconnect(); setTimeout(phaoHoa, 600); }
+      if (!ds.some(d => d.isIntersecting)) return;
+      ioPhao.disconnect();
+      setTimeout(() => { if (!xongPhaoCuoi) phaoHoa(); }, 600);
     }, { threshold: 1 });
     ioPhao.observe($('.ky'));
-    $('.ky').addEventListener('click', phaoHoa);
+    $('.ky').addEventListener('click', () => phaoHoa());
     capNhatCuon();
   }
 
@@ -436,9 +509,13 @@
     $('#da-gui-chu').textContent = goi.den === 'Có'
       ? `Cảm ơn ${goi.ten}! Hai chúng tôi đã ghi nhận ${goi.so} người. Hẹn gặp Quý khách ngày 28.11.`
       : `Cảm ơn ${goi.ten} đã báo. Hai chúng tôi rất tiếc và mong sớm gặp lại Quý khách.`;
-    if (!hieuUng || giam) { daGui.classList.add('da-dap'); return; }
+    if (!hieuUng) { daGui.classList.add('da-dap'); return; }
+    // Đóng dấu, bắn pháo hoa mừng, khoảng 5 giây sau thì đóng thiệp
+    xongPhaoCuoi = true;
+    henDongThiep(5);
+    if (giam) { daGui.classList.add('da-dap'); return; }
     daGui.classList.remove('dap', 'da-dap');
-    chanPhaoDen = Date.now() + 4200;
+    setTimeout(() => phaoHoa({ lan: 4, nhip: 480, giu: 3900 }), 1000);
     daGui.scrollIntoView({ block: 'center', behavior: 'smooth' });
     setTimeout(() => {
       void daGui.offsetWidth;
@@ -455,10 +532,12 @@
     }, 500);
   }
   $('#nut-sua').addEventListener('click', () => {
+    huyDongThiep();
     daGui.hidden = true;
     phieu.hidden = false;
     $('#xn-ten').focus();
   });
+  $('#o-lai').addEventListener('click', huyDongThiep);
 
   // ---------- Nhạc, chạm thổi hạt ----------
   const nutNhac = $('#nut-nhac');

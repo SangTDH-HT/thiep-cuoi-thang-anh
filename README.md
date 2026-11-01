@@ -17,6 +17,11 @@ Facebook không cho trang web đọc tên tài khoản của người bấm link
 
 Danh sách tên gõ ở trang *Tạo link* chỉ nằm trên máy đang dùng, không gửi đi đâu.
 
+Chạm dấu niêm để mở thiệp: trang chuyển sang toàn màn hình (ẩn thanh địa chỉ) trên Android và máy tính.
+iPhone không cho trang web tự ẩn thanh địa chỉ nên vẫn xem trong khung trình duyệt.
+Gửi xác nhận xong: đóng dấu "Đã nhận", bắn pháo hoa, đếm ngược 5 giây rồi đóng trang. Trình duyệt nào không cho
+trang tự đóng thì thiệp gập hai cánh lại kèm lời chào. Khách bấm *Ở lại xem thiệp* để huỷ đếm ngược.
+
 ## Nối Google Sheet để nhận xác nhận (làm một lần)
 
 1. Mở <https://sheets.new>, đặt tên bảng tính, ví dụ *Khách dự cưới Thắng Ánh*.
