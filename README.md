@@ -2,8 +2,15 @@
 
 Thiệp mời online, Thứ Bảy 28.11.2026, Tầng 2 Khách sạn Sailing, Hà Tĩnh.
 
-- Thiệp: <https://sangtdh-ht.github.io/thiep-cuoi-thang-anh/>
-- Tạo link mời từng người: <https://sangtdh-ht.github.io/thiep-cuoi-thang-anh/tao-link.html>
+- Thiệp: <https://thanganh.pages.dev/>
+- Tạo link mời từng người: <https://thanganh.pages.dev/tao-link>
+
+Thiệp chạy trên Cloudflare Pages. Link riêng `?k=` thì khung xem trước trong Messenger/Facebook hiện
+"Thiệp mời gửi <tên khách>" (sửa thẻ og bằng [functions/_middleware.js](functions/_middleware.js)).
+Link GitHub Pages cũ tự chuyển sang đường dẫn này.
+
+Đẩy bản mới lên Cloudflare: `python tools/trien_khai.py` (đăng nhập một lần bằng `npx wrangler@4 login`).
+Đẩy lên GitHub vẫn như thường để giữ mã nguồn.
 
 ## Gửi thiệp
 
@@ -57,7 +64,7 @@ Sửa code Apps Script sau này thì phải **Triển khai → Quản lý các b
 | URL Google Sheet, ngày giờ đếm ngược, bật/tắt nhạc | `config.js` |
 | Ảnh hiện khi gửi link | `tools/og.html`, rồi chạy `python tools/chup_og.py` ra `og.jpg` |
 
-Facebook lưu ảnh xem trước một thời gian. Đổi `og.jpg` xong thì dán link vào
+Facebook lưu ảnh xem trước một thời gian. Đổi `og.jpg` xong thì chạy lại `python tools/trien_khai.py`, dán link vào
 <https://developers.facebook.com/tools/debug/> bấm *Scrape Again* để cập nhật.
 
 Thử phần xác nhận khi chưa nối Google Sheet: thêm `?thu=1` vào cuối link (chỉ giả lập, không ghi đi đâu).
@@ -71,4 +78,6 @@ Thử phần xác nhận khi chưa nối Google Sheet: thêm `?thu=1` vào cuố
 - `nhac.js`: hộp nhạc Canon in D tổng hợp bằng Web Audio (không cần file nhạc)
 - `monogram.js`: chữ lồng T&A
 - `tao-link.html`: trang tạo link mời
+- `functions/_middleware.js`: Cloudflare Pages Function ghi tên khách vào khung xem trước
+- `tools/trien_khai.py`: dựng `dist/` và đẩy lên Cloudflare Pages
 - `apps-script/Code.gs`: nhận xác nhận, ghi Google Sheet
