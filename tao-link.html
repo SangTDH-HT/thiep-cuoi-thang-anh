@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Tạo link mời · Thiệp cưới Thắng &amp; Ánh</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Ephesis&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --giay: #EEF0F3; --bia: #E2DBD0; --ban: #CFC5B6;
+    --muc: #3B3536; --muc-nhat: #675E60; --but: #2C3A5E;
+    --nhu: #A9844E; --nhu-dam: #7E5F33; --tim: #B8433C;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ban); color: var(--muc); font: 400 18px/1.55 'EB Garamond', Georgia, serif; }
+  main { max-width: 640px; margin: 0 auto; padding: 28px 18px 60px; background: var(--giay); min-height: 100vh; }
+  h1 { margin: 0; font: 400 52px/1.15 'Ephesis', cursive; color: var(--nhu-dam); text-align: center; }
+  .phu { margin: 4px 0 26px; text-align: center; font-style: italic; color: var(--muc-nhat); }
+  h2 { margin: 30px 0 8px; font: 600 20px/1.3 'EB Garamond', serif; }
+  label.nhan { display: block; font-weight: 500; margin-bottom: 6px; }
+  textarea { width: 100%; min-height: 170px; padding: 12px; font: 400 20px/1.5 'EB Garamond', serif; color: var(--but);
+    border: 1px solid rgba(103, 94, 96, .5); border-radius: 4px; background: #fff; resize: vertical; }
+  .tuy-chon { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 12px 0; }
+  .tuy-chon label { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; cursor: pointer; }
+  .tuy-chon input { width: 20px; height: 20px; accent-color: var(--nhu-dam); }
+  fieldset { border: 0; padding: 0; margin: 0; }
+  legend { font-weight: 500; padding: 0; margin-bottom: 2px; }
+  button { font: 500 17px/1 'EB Garamond', serif; cursor: pointer; border-radius: 4px; }
+  .nut-chinh { width: 100%; min-height: 50px; border: 0; color: #FFF9EE; font-weight: 600; font-size: 19px;
+    background: linear-gradient(180deg, #9C7845, #77582C); box-shadow: inset 0 1px 0 rgba(255, 238, 205, .55); }
+  .nut-phu { min-height: 40px; padding: 0 14px; border: 1px solid var(--nhu); background: #fff; color: var(--nhu-dam); }
+  :focus-visible { outline: 2px solid var(--but); outline-offset: 2px; }
+  .dong-link { display: flex; gap: 8px; align-items: center; }
+  .dong-link input { flex: 1; min-width: 0; min-height: 40px; padding: 0 10px; font: 15px/1 Consolas, monospace; border: 1px solid rgba(103,94,96,.45); border-radius: 4px; background: #fff; color: var(--muc-nhat); }
+  ol { list-style: none; margin: 14px 0 0; padding: 0; }
+  li.khach { padding: 14px 0; border-bottom: 1px dotted rgba(103, 94, 96, .5); }
+  .ten { font: 400 30px/1.3 'Ephesis', cursive; color: var(--but); }
+  .hang-nut { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; align-items: center; }
+  .hang-nut label { display: inline-flex; gap: 6px; align-items: center; margin-right: 6px; font-size: 16px; }
+  .hang-nut input { width: 18px; height: 18px; accent-color: var(--nhu-dam); }
+  .link-nho { display: block; margin-top: 4px; font: 13px/1.4 Consolas, monospace; color: var(--muc-nhat); word-break: break-all; }
+  .bao { min-height: 1.4em; margin: 10px 0 0; font-style: italic; color: var(--nhu-dam); text-align: center; }
+  .rong { color: var(--muc-nhat); font-style: italic; }
+  .dau-ra-dau { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Tạo link mời</h1>
+  <p class="phu">Mỗi người một link: mở ra là thấy tên mình trên thiệp.</p>
+
+  <h2>Link chung để đăng Facebook</h2>
+  <p class="rong" style="margin:0 0 8px">Người mở link này sẽ tự gõ tên mình lên thiệp.</p>
+  <div class="dong-link"><input id="link-chung" readonly aria-label="Link chung"><button class="nut-phu" type="button" data-chep="#link-chung">Chép</button></div>
+
+  <h2>Link riêng từng người</h2>
+  <label class="nhan" for="ds">Mỗi dòng một tên (ghi đúng như muốn hiện trên thiệp)</label>
+  <textarea id="ds" placeholder="Cô chú Hùng&#10;Anh Tuấn&#10;Bạn Lan"></textarea>
+  <div class="tuy-chon">
+    <label><input type="checkbox" id="nt" checked> Kèm “+ NT” (người thương)</label>
+  </div>
+  <fieldset class="tuy-chon">
+    <legend>Khách của</legend>
+    <label><input type="radio" name="ben" value="g" checked> Nhà gái</label>
+    <label><input type="radio" name="ben" value="t"> Nhà trai</label>
+    <label><input type="radio" name="ben" value=""> Để khách tự chọn</label>
+  </fieldset>
+  <button class="nut-chinh" type="button" id="tao">Tạo link</button>
+  <p class="bao" id="bao" role="status" aria-live="polite"></p>
+
+  <section id="dau-ra" hidden>
+    <div class="dau-ra-dau">
+      <h2 id="so-link">Link</h2>
+      <button class="nut-phu" type="button" id="chep-het">Chép tất cả</button>
+    </div>
+    <ol id="ds-link"></ol>
+  </section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  const $ = s => document.querySelector(s);
+  const goc = new URL('./', location.href).href;
+  const bao = $('#bao');
+  $('#link-chung').value = goc;
+
+  function maHoa(s) {
+    const bytes = new TextEncoder().encode(s);
+    let bin = '';
+    bytes.forEach(b => { bin += String.fromCharCode(b); });
+    return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  const taoLink = (ten, nt, ben) => goc + '?k=' + maHoa(ten + '|' + (nt ? 1 : 0) + '|' + ben);
+
+  async function chep(chu, ten) {
+    try { await navigator.clipboard.writeText(chu); }
+    catch (e) {
+      const t = document.createElement('textarea');
+      t.value = chu; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove();
+    }
+    bao.textContent = 'Đã chép ' + ten + '.';
+  }
+
+  document.addEventListener('click', e => {
+    const n = e.target.closest('[data-chep]');
+    if (n) chep($(n.dataset.chep).value, 'link chung');
+  });
+
+  try { $('#ds').value = localStorage.getItem('tl.ds') || ''; } catch (e) { /* không lưu được */ }
+
+  let danhSach = [];
+  function ve() {
+    const ol = $('#ds-link');
+    ol.innerHTML = '';
+    danhSach.forEach((k, i) => {
+      const li = document.createElement('li');
+      li.className = 'khach';
+      const link = taoLink(k.ten, k.nt, k.ben);
+      li.innerHTML = '<div class="ten"></div><span class="link-nho"></span>' +
+        '<div class="hang-nut"><label><input type="checkbox"> + NT</label>' +
+        '<button class="nut-phu" type="button" data-viec="chep">Chép link</button>' +
+        (navigator.share ? '<button class="nut-phu" type="button" data-viec="gui">Gửi…</button>' : '') +
+        '<a class="nut-phu" style="display:inline-flex;align-items:center;text-decoration:none" target="_blank" rel="noopener">Xem thử</a></div>';
+      li.querySelector('.ten').textContent = k.ten + (k.nt ? ' + NT' : '');
+      li.querySelector('.link-nho').textContent = link;
+      li.querySelector('a').href = link;
+      const hop = li.querySelector('input');
+      hop.checked = k.nt;
+      hop.addEventListener('change', () => { k.nt = hop.checked; ve(); });
+      li.querySelector('[data-viec="chep"]').addEventListener('click', () => chep(link, 'link của ' + k.ten));
+      const gui = li.querySelector('[data-viec="gui"]');
+      if (gui) gui.addEventListener('click', () => navigator.share({ title: 'Thiệp mời cưới Quang Thắng & Ngọc Ánh', text: 'Trân trọng kính mời ' + k.ten + (k.nt ? ' + NT' : '') + ' tới dự lễ thành hôn của Quang Thắng & Ngọc Ánh', url: link }).catch(() => {}));
+      ol.appendChild(li);
+    });
+    $('#so-link').textContent = danhSach.length + ' link';
+    $('#dau-ra').hidden = !danhSach.length;
+  }
+
+  $('#tao').addEventListener('click', () => {
+    const nt = $('#nt').checked;
+    const ben = document.querySelector('input[name=ben]:checked').value;
+    const ten = $('#ds').value.split('\n').map(s => s.trim().replace(/\s+/g, ' ')).filter(Boolean);
+    try { localStorage.setItem('tl.ds', $('#ds').value); } catch (e) { /* không lưu được */ }
+    if (!ten.length) { bao.textContent = 'Gõ ít nhất một tên vào ô trên.'; $('#ds').focus(); return; }
+    const dai = ten.find(t => t.length > 60);
+    if (dai) { bao.textContent = 'Tên "' + dai.slice(0, 20) + '…" dài quá 60 chữ, rút gọn giúp.'; return; }
+    danhSach = ten.map(t => ({ ten: t, nt, ben }));
+    bao.textContent = '';
+    ve();
+    $('#dau-ra').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  $('#chep-het').addEventListener('click', () => {
+    const chu = danhSach.map(k => k.ten + (k.nt ? ' + NT' : '') + ': ' + taoLink(k.ten, k.nt, k.ben)).join('\n');
+    chep(chu, danhSach.length + ' link');
+  });
+})();
+</script>
+</body>
+</html>

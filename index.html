@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Thiệp cưới Quang Thắng &amp; Ngọc Ánh · 28.11.2026</title>
+<meta name="description" content="Trân trọng kính mời Quý khách tới dự lễ thành hôn của Quang Thắng và Ngọc Ánh lúc 11 giờ, Thứ Bảy 28.11.2026 tại Tầng 2, Khách sạn Sailing, Hà Tĩnh.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="vi_VN">
+<meta property="og:title" content="Thiệp mời cưới Quang Thắng &amp; Ngọc Ánh">
+<meta property="og:description" content="11 giờ, Thứ Bảy 28.11.2026, Tầng 2 Khách sạn Sailing, Hà Tĩnh. Bấm để mở thiệp và xác nhận tham dự.">
+<meta property="og:url" content="https://sangtdh-ht.github.io/thiep-cuoi-thang-anh/">
+<meta property="og:image" content="https://sangtdh-ht.github.io/thiep-cuoi-thang-anh/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Thiệp cưới Quang Thắng và Ngọc Ánh, 28.11.2026">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#CFC5B6">
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Ephesis&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="dong">
+
+<canvas id="hat" aria-hidden="true"></canvas>
+<div id="man-dem" aria-hidden="true"></div>
+<div id="loe" aria-hidden="true"></div>
+
+<!-- Bìa thiệp: hai cánh cửa gấp, giữa có dấu niêm T&A -->
+<div class="bia" id="bia">
+  <div class="bia-ban"></div>
+  <div class="bia-the" id="bia-the">
+    <div class="anh-trong"></div>
+    <div class="cua cua-trai" aria-hidden="true"><div class="mat-ngoai"></div><div class="mat-trong"></div></div>
+    <div class="cua cua-phai" aria-hidden="true"><div class="mat-ngoai"></div><div class="mat-trong"></div></div>
+
+    <template id="mau-bia">
+      <div class="ruot">
+        <div class="bia-hoa"></div>
+        <p class="bia-tieu">Thiệp Mời</p>
+        <p class="bia-kinh-moi">Trân trọng kính mời:</p>
+        <div class="dong-cham"><span class="ten-viet"></span></div>
+      </div>
+    </template>
+
+    <div class="ruot lop-chinh" id="lop-chinh">
+      <div class="bia-hoa"></div>
+      <h1 class="bia-tieu">Thiệp Mời</h1>
+      <p class="bia-kinh-moi">Trân trọng kính mời:</p>
+      <div class="dong-cham">
+        <span class="ten-viet" id="ten-bia"></span>
+        <label class="o-nhap" id="o-nhap" hidden>
+          <span class="an-di">Tên của Quý khách</span>
+          <input id="nhap-ten" type="text" maxlength="60" autocomplete="name" enterkeyhint="go" placeholder="Gõ tên Quý khách vào đây">
+        </label>
+        <p class="goi-y" id="goi-y" hidden>Tên sẽ được ghi lên thiệp</p>
+      </div>
+    </div>
+
+    <button class="dau-niem" id="nut-mo" type="button" aria-label="Mở thiệp">
+      <span class="niem niem-trai"><span class="niem-mat"></span></span>
+      <span class="niem niem-phai"><span class="niem-mat"></span></span>
+      <span class="niem-chu">Chạm để mở thiệp</span>
+    </button>
+  </div>
+</div>
+
+<main class="thiep" id="thiep">
+
+  <!-- Mở đầu: tên dâu rể -->
+  <section class="mo-dau" id="mo-dau" aria-label="Quang Thắng và Ngọc Ánh">
+    <div class="hoa-dau" id="hoa-dau"></div>
+    <div class="cap-doi">
+      <p class="ten-doi ten-re"><span class="chu-nhu" data-viet>Quang Thắng</span></p>
+      <p class="truong">
+        <span>Trưởng Nam</span>
+        <svg class="hai-tim" viewBox="0 0 44 26" aria-hidden="true"><path d="M13 23C3 15 2 7 7 4c3-2 6 0 6 3 0-3 3-5 6-3 5 3 4 11-6 16z"/><path d="M29 23c-9-7-10-14-5-17 3-2 6 0 6 3 0-3 3-5 6-3 5 3 4 11-7 17z"/></svg>
+        <span>Trưởng Nữ</span>
+      </p>
+      <p class="ten-doi ten-dau"><span class="chu-nhu" data-viet>Ngọc Ánh</span></p>
+    </div>
+    <p class="ngay-lon"><span>Thứ Bảy</span><span class="vach" aria-hidden="true"></span><span>28 . 11 . 2026</span></p>
+    <p class="vuot" aria-hidden="true">Vuốt lên xem tiếp</p>
+  </section>
+
+  <!-- Lời mời -->
+  <section class="loi-moi" id="loi-moi" data-hien>
+    <div class="hai-ho">
+      <div class="ho">
+        <h2>Nhà Trai</h2>
+        <p class="ong-ba">Ông: Trần Mạnh Hiến<br>Bà: Võ Thị Phương Chinh</p>
+        <p class="dia-chi">SN147, Đường Chính Hữu, Phường Thành Sen, Tỉnh Hà Tĩnh</p>
+      </div>
+      <div class="ho">
+        <h2>Nhà Gái</h2>
+        <p class="ong-ba">Ông: Nguyễn Hữu Dương<br>Bà: Nguyễn Thị Chương</p>
+        <p class="dia-chi">SN42, ngõ 23, Hà Huy Tập, Phường Thành Sen, Tỉnh Hà Tĩnh</p>
+      </div>
+    </div>
+
+    <div class="moi">
+      <p class="moi-kinh">Trân trọng kính mời</p>
+      <p class="ten-khach"><span class="ten-viet" id="ten-loi-moi"></span></p>
+      <p class="moi-dong">tới dự lễ thành hôn của hai chúng tôi</p>
+      <p class="moi-dong">Hôn lễ và bữa tiệc được tổ chức vào lúc</p>
+      <p class="moi-gio">11 giờ 00 phút</p>
+      <p class="moi-ngay"><span>Thứ Bảy</span><span class="vach" aria-hidden="true"></span><span class="chu-nhu-in">28 . 11 . 2026</span></p>
+      <p class="moi-am">(Tức ngày 20 tháng 10 năm Bính Ngọ)</p>
+      <p class="moi-noi">Tại Tầng 2 – Khách sạn Sailing</p>
+      <p class="moi-dc">Số 02, Đại lộ Xô Viết Nghệ Tĩnh, P. Thành Sen, Hà Tĩnh</p>
+      <p class="moi-dong">Lễ rước dâu vào hồi 9 giờ cùng ngày tại nhà gái.</p>
+      <p class="moi-han-hanh">Rất hân hạnh được đón tiếp!</p>
+    </div>
+  </section>
+
+  <!-- Save the date -->
+  <section class="giu-ngay" id="giu-ngay" data-hien>
+    <div class="vom">
+      <div class="vom-dau">
+        <div class="vom-hoa" id="vom-hoa"></div>
+        <svg class="chu-long" id="chu-long" aria-hidden="true"></svg>
+      </div>
+      <h2 class="save">Save the Date</h2>
+      <p class="thang">Tháng 11 – 2026</p>
+      <p class="an-di">Thứ Bảy, ngày 28 tháng 11 năm 2026</p>
+      <div class="lich" id="lich" aria-hidden="true"></div>
+      <svg class="hoa-van" viewBox="0 0 160 30" aria-hidden="true"><path pathLength="1" d="M4 15c14 0 22-9 32-9 9 0 11 9 3 10-7 1-6-9 4-9 12 0 22 9 37 9s25-9 37-9c10 0 11 10 4 9-8-1-6-10 3-10 10 0 18 9 32 9M80 15c-6 0-9 5-5 7 3 1 5-2 5-7 0 5 2 8 5 7 4-2 1-7-5-7"/></svg>
+      <div class="dem" id="dem" role="timer" aria-live="off">
+        <div class="dem-o"><span class="dem-so" data-o="ngay">00</span><span class="dem-chu">ngày</span></div>
+        <div class="dem-o"><span class="dem-so" data-o="gio">00</span><span class="dem-chu">giờ</span></div>
+        <div class="dem-o"><span class="dem-so" data-o="phut">00</span><span class="dem-chu">phút</span></div>
+        <div class="dem-o"><span class="dem-so" data-o="giay">00</span><span class="dem-chu">giây</span></div>
+      </div>
+      <p class="dem-xong" id="dem-xong" hidden></p>
+    </div>
+  </section>
+
+  <!-- Lịch trình -->
+  <section class="lich-trinh" id="lich-trinh" data-hien>
+    <h2 class="tieu-de">Lịch trình</h2>
+    <svg class="than-cay" id="than-cay" viewBox="0 0 40 600" preserveAspectRatio="none" aria-hidden="true">
+      <path pathLength="1" d="M20 0C14 80 26 150 20 230S14 380 20 460 24 560 20 600"/>
+    </svg>
+    <ol class="moc">
+      <li class="moc-1">
+        <p class="moc-gio">9:00</p>
+        <h3>Lễ rước dâu</h3>
+        <p class="moc-noi">Tại nhà gái<br>SN42, ngõ 23, Hà Huy Tập, P. Thành Sen</p>
+        <a class="nut-duong" href="https://www.google.com/maps/search/?api=1&amp;query=42+ng%C3%B5+23+H%C3%A0+Huy+T%E1%BA%ADp+Th%C3%A0nh+Sen+H%C3%A0+T%C4%A9nh" target="_blank" rel="noopener">Chỉ đường tới nhà gái</a>
+      </li>
+      <li class="moc-2">
+        <p class="moc-gio">11:00</p>
+        <h3>Hôn lễ và tiệc cưới</h3>
+        <ul class="nghi-thuc">
+          <li><svg viewBox="0 0 48 48" aria-hidden="true"><path pathLength="1" d="M9 44V22C9 11 16 5 24 5s15 6 15 17v22M5 44h38M13 44V24c0-7 5-12 11-12s11 5 11 12v20M13 22c3 6 6 9 11 9s8-3 11-9"/><circle cx="16" cy="9" r="2"/><circle cx="24" cy="5" r="2"/><circle cx="32" cy="9" r="2"/><circle cx="10" cy="16" r="1.6"/><circle cx="38" cy="16" r="1.6"/></svg>Đón khách</li>
+          <li><svg viewBox="0 0 48 48" aria-hidden="true"><circle pathLength="1" cx="18" cy="29" r="11"/><circle pathLength="1" cx="30" cy="29" r="11"/><path pathLength="1" d="M27 14l3-5 3 5-3 3z"/></svg>Lễ cưới</li>
+          <li><svg viewBox="0 0 48 48" aria-hidden="true"><circle pathLength="1" cx="24" cy="25" r="13"/><circle pathLength="1" cx="24" cy="25" r="8.5"/><path pathLength="1" d="M5 12v9c0 2 1 3 2 3v18M3 12v8M7 12v8M43 12c-3 2-4 7-4 11h4v19"/><path class="to" d="M24 30c-4-3-5-5-4-7 1-1.4 3-1 4 .6 1-1.6 3-2 4-.6 1 2 0 4-4 7z"/></svg>Khai tiệc</li>
+        </ul>
+        <p class="moc-noi">Tầng 2 – Khách sạn Sailing<br>Số 02, Đại lộ Xô Viết Nghệ Tĩnh, P. Thành Sen</p>
+        <a class="nut-duong" href="https://www.google.com/maps/search/?api=1&amp;query=Sailing+Tower+H%C3%A0+T%C4%A9nh+02+X%C3%B4+Vi%E1%BA%BFt+Ngh%E1%BB%87+T%C4%A9nh" target="_blank" rel="noopener">Chỉ đường tới khách sạn</a>
+      </li>
+    </ol>
+  </section>
+
+  <!-- Xác nhận tham dự -->
+  <section class="xac-nhan" id="xac-nhan" data-hien>
+    <h2 class="tieu-de">Xác nhận tham dự</h2>
+    <p class="dan">Xin Quý khách báo giúp để hai chúng tôi sắp xếp chỗ ngồi chu đáo.</p>
+
+    <form class="phieu" id="phieu" novalidate>
+      <label class="o">
+        <span class="o-ten">Tên Quý khách</span>
+        <input name="ten" id="xn-ten" type="text" maxlength="60" autocomplete="name" required>
+      </label>
+
+      <fieldset class="chon" id="xn-den">
+        <legend class="o-ten">Quý khách sẽ đến chứ?</legend>
+        <label class="o-tick"><input type="radio" name="den" value="Có"><span class="hop"><svg viewBox="0 0 24 24"><path pathLength="1" d="M4 13l5 5L20 5"/></svg></span>Tôi sẽ đến</label>
+        <label class="o-tick"><input type="radio" name="den" value="Không"><span class="hop"><svg viewBox="0 0 24 24"><path pathLength="1" d="M4 13l5 5L20 5"/></svg></span>Tiếc quá, tôi bận</label>
+      </fieldset>
+
+      <div class="neu-den" id="neu-den">
+        <div class="so-nguoi">
+          <span class="o-ten" id="nhan-so">Đi mấy người (tính cả Quý khách)</span>
+          <div class="buoc" role="group" aria-labelledby="nhan-so">
+            <button type="button" class="nut-buoc" data-buoc="-1" aria-label="Bớt một người">−</button>
+            <output id="xn-so" aria-live="polite">1</output>
+            <button type="button" class="nut-buoc" data-buoc="1" aria-label="Thêm một người">+</button>
+          </div>
+        </div>
+        <fieldset class="chon" id="xn-ben">
+          <legend class="o-ten">Quý khách là khách của</legend>
+          <label class="o-tick"><input type="radio" name="ben" value="Nhà trai"><span class="hop"><svg viewBox="0 0 24 24"><path pathLength="1" d="M4 13l5 5L20 5"/></svg></span>Nhà trai</label>
+          <label class="o-tick"><input type="radio" name="ben" value="Nhà gái"><span class="hop"><svg viewBox="0 0 24 24"><path pathLength="1" d="M4 13l5 5L20 5"/></svg></span>Nhà gái</label>
+        </fieldset>
+      </div>
+
+      <label class="o">
+        <span class="o-ten">Lời nhắn gửi cô dâu chú rể <em>(không bắt buộc)</em></span>
+        <textarea name="loi" id="xn-loi" rows="3" maxlength="500"></textarea>
+      </label>
+
+      <input class="bay" name="web" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <button class="nut-gui" type="submit" id="nut-gui">Gửi xác nhận</button>
+      <p class="bao" id="bao" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="da-gui" id="da-gui" hidden>
+      <svg class="con-dau" viewBox="0 0 200 200" aria-hidden="true">
+        <defs>
+          <filter id="muc-dau"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.6"/><feComposite in="SourceGraphic" operator="in"/></filter>
+          <path id="vong-chu" d="M100 100m-70 0a70 70 0 1 1 140 0a70 70 0 1 1-140 0"/>
+        </defs>
+        <g filter="url(#muc-dau)">
+          <circle cx="100" cy="100" r="92" fill="none" stroke="currentColor" stroke-width="5"/>
+          <circle cx="100" cy="100" r="82" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <circle cx="100" cy="100" r="50" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <text font-size="15" letter-spacing="2.4" fill="currentColor"><textPath href="#vong-chu" startOffset="2%">QUANG THẮNG ♥ NGỌC ÁNH ♥ 28.11.2026 ♥</textPath></text>
+          <text x="100" y="98" text-anchor="middle" font-size="27" fill="currentColor" font-style="italic">Đã nhận</text>
+          <path d="M100 113c-8-6-11-10-8-14 2-3 6-2 8 1 2-3 6-4 8-1 3 4 0 8-8 14z" fill="currentColor"/>
+        </g>
+      </svg>
+      <p class="da-gui-chu" id="da-gui-chu"></p>
+      <button class="nut-phu" type="button" id="nut-sua">Sửa lại xác nhận</button>
+    </div>
+  </section>
+
+  <!-- Lời cảm ơn -->
+  <footer class="cam-on" id="cam-on" data-hien>
+    <div class="dan-bang">
+      <div class="dan-hoa" id="hoa-cam-on"></div>
+      <span class="bang-keo" aria-hidden="true"></span>
+    </div>
+    <p class="thank" data-viet>Thank you</p>
+    <p class="loi-cam-on">Sự hiện diện của Quý khách<br>là niềm vinh hạnh cho hai chúng tôi!</p>
+    <p class="ky">Quang Thắng &amp; Ngọc Ánh</p>
+  </footer>
+</main>
+
+<button class="nut-nhac" id="nut-nhac" type="button" aria-pressed="true" aria-label="Tắt nhạc" hidden>
+  <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M12 23V8l13-3v15"/><circle cx="9" cy="23" r="3.2"/><circle cx="22" cy="20" r="3.2"/></svg>
+</button>
+
+<script src="config.js"></script>
+<script src="monogram.js"></script>
+<script src="flora.js"></script>
+<script src="hat.js"></script>
+<script src="nhac.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
