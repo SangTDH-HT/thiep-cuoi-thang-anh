@@ -259,8 +259,9 @@
   function moPhim(tu) {
     if (!ALBUM) return;
     truocPhim = document.activeElement;
-    toanManHinh();
+    // Bật nhạc trước: xin toàn màn hình sẽ dùng mất lượt chạm, sau đó trình duyệt không cho phát nhạc
     if (CFG.nhac !== false && !HopNhac.dangChay) { HopNhac.batDau(); capNhatNutNhac(); }
+    toanManHinh();
     phim.hidden = false;
     document.body.classList.add('dang-xem');
     $('#phim-dong').focus();
@@ -377,8 +378,9 @@
   async function moThiep() {
     if (dangMo) return;
     dangMo = true;
-    toanManHinh();
+    // Bật nhạc trước: xin toàn màn hình sẽ dùng mất lượt chạm, sau đó trình duyệt không cho phát nhạc
     if (CFG.nhac !== false) { try { HopNhac.batDau(); } catch (e) { /* trình duyệt không cho phát */ } }
+    toanManHinh();
     rung(18);
     const the = $('#bia-the');
     the.classList.remove('lac-the'); void the.offsetWidth; the.classList.add('lac-the');

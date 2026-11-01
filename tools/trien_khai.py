@@ -17,6 +17,9 @@ for ten in FILE_TRANG:
     shutil.copy2(goc / ten, dist / ten)
 # Ảnh cưới chỉ đưa lên Cloudflare, không đưa lên GitHub (xem .gitignore)
 shutil.copytree(goc / "anh", dist / "anh")
+# Nhạc có bản quyền: chỉ đẩy lên Cloudflare, không đưa lên GitHub
+if (goc / "nhac").is_dir():
+    shutil.copytree(goc / "nhac", dist / "nhac")
 # Chỉ trang chủ đi qua Function (đổi tên khách trong khung xem trước); file tĩnh phục vụ thẳng, không tính lượt Function
 (dist / "_routes.json").write_text('{"version": 1, "include": ["/", "/index.html"], "exclude": []}\n', encoding="utf-8")
 (dist / "_headers").write_text(

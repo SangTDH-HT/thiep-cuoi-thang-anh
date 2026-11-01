@@ -1,6 +1,48 @@
-// Hộp nhạc chơi Canon in D (Pachelbel, nhạc cổ điển không còn bản quyền), tổng hợp bằng Web Audio — không cần file mp3.
+// Nhạc nền. Có file nhạc (THIEP.fileNhac) thì phát file đó, lặp lại; chưa có thì dùng hộp nhạc
+// Canon in D (Pachelbel, nhạc cổ điển không còn bản quyền) tổng hợp bằng Web Audio.
 (function () {
   'use strict';
+
+  const FILE = (window.THIEP || {}).fileNhac;
+  if (FILE) {
+    // Thẻ <audio> thường: iPhone vẫn phát khi gạt im lặng; máy cho chỉnh âm lượng thì tăng dần cho êm
+    const am = new Audio();
+    am.src = FILE;
+    am.loop = true;
+    am.preload = 'metadata';
+    am.setAttribute('playsinline', '');
+    addEventListener('load', () => { am.preload = 'auto'; am.load(); });
+    let dangChay = false, henAm = 0;
+    const doAm = (den, ms, xong) => {
+      clearInterval(henAm);
+      const tu = am.volume, t0 = performance.now();
+      henAm = setInterval(() => {
+        const u = Math.min(1, (performance.now() - t0) / ms);
+        try { am.volume = tu + (den - tu) * u; } catch (e) { /* iPhone không cho đổi âm lượng */ }
+        if (u >= 1) { clearInterval(henAm); if (xong) xong(); }
+      }, 40);
+    };
+    function batDau() {
+      if (dangChay) return;
+      dangChay = true;
+      try { am.volume = 0; } catch (e) { /* bỏ qua */ }
+      const p = am.play();
+      if (p && p.catch) p.catch(() => { dangChay = false; });
+      doAm(1, 2500);
+    }
+    function dung() {
+      if (!dangChay) return;
+      dangChay = false;
+      doAm(0, 600, () => { if (!dangChay) am.pause(); });
+    }
+    let dungViAn = false;
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && dangChay) { dung(); dungViAn = true; }
+      else if (!document.hidden && dungViAn) { dungViAn = false; batDau(); }
+    });
+    window.HopNhac = { batDau, dung, get dangChay() { return dangChay; } };
+    return;
+  }
 
   const BPM = 70, PHACH = 60 / BPM;
   // 8 hợp âm, mỗi hợp âm 2 phách: [nốt trầm, các nốt rải]
