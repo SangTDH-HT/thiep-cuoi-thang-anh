@@ -1,6 +1,42 @@
 {
-  "_ghi_chu": "Số = số ảnh trong bảng 'python tools/xu_ly_anh.py xem'. album: thứ tự trong album; noi_bat: vị trí (trong album) của 7 ảnh hiện trên thiệp; rieng: ảnh mở đầu (bia), ô vòm Save the Date (vom), lời cảm ơn (camon).",
-  "album": [18, 3, 7, 12, 13, 10, 11, 5, 6, 8, 9, 16, 17, 14, 15, 1, 2, 4, 27, 19, 20, 22, 23, 24, 25, 26, 21],
-  "noi_bat": [2, 3, 7, 26, 12, 5, 24],
-  "rieng": { "bia": 21, "vom": 8, "camon": 12 }
+  "_ghi_chu": "Số = số ảnh trong bảng 'python tools/xu_ly_anh.py xem'. album: thứ tự trong album; noi_bat: vị trí (trong album) của 3 ảnh xếp chồng hiện trên thiệp (ảnh đầu nằm trên cùng); rieng: ảnh mở đầu (bia), ô vòm Save the Date (vom), lời cảm ơn (camon).",
+  "album": [
+    18,
+    3,
+    7,
+    12,
+    13,
+    10,
+    11,
+    5,
+    6,
+    8,
+    9,
+    16,
+    17,
+    14,
+    15,
+    1,
+    2,
+    4,
+    27,
+    19,
+    20,
+    22,
+    23,
+    24,
+    25,
+    26,
+    21
+  ],
+  "noi_bat": [
+    2,
+    7,
+    1
+  ],
+  "rieng": {
+    "bia": 21,
+    "vom": 8,
+    "camon": 12
+  }
 }

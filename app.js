@@ -170,11 +170,15 @@
     if (!ALBUM) return;
     $('#album').hidden = false;
     $('#nut-album').textContent = `Xem cả album (${ALBUM.anh.length} ảnh)`;
-    const io = new IntersectionObserver(ds => ds.forEach(d => {
-      if (!d.isIntersecting) return;
-      io.unobserve(d.target);
-      d.target.classList.add('hien-anh');
-    }), { threshold: 0.25 });
+    // Cuộn tới thì xấp ảnh xoè ra và các ảnh "rửa" dần
+    const xap = $('#cat-anh');
+    const io = new IntersectionObserver(ds => {
+      if (!ds.some(d => d.isIntersecting)) return;
+      io.disconnect();
+      xap.classList.add('xoe');
+      $$('.in', xap).forEach(f => f.classList.add('hien-anh'));
+    }, { threshold: 0.3 });
+    io.observe(xap);
     ALBUM.noiBat.forEach(vt => {
       const a = ALBUM.anh[vt - 1];
       if (!a) return;
@@ -184,7 +188,6 @@
       nut.type = 'button';
       nut.className = 'khung';
       nut.setAttribute('aria-label', `Xem ảnh số ${vt} trong album`);
-      nut.style.setProperty('--ti-le', `${a.w} / ${a.h}`);
       nut.style.backgroundImage = `url("${a.m}")`;
       const im = new Image();
       im.alt = '';
@@ -196,7 +199,6 @@
       f.appendChild(nut);
       $('#cat-anh').appendChild(f);
       nut.addEventListener('click', () => moXem(vt - 1));
-      io.observe(f);
     });
   }
 
