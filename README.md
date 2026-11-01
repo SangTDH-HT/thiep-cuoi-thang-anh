@@ -22,7 +22,14 @@ iPhone không cho trang web tự ẩn thanh địa chỉ nên vẫn xem trong kh
 Gửi xác nhận xong: đóng dấu "Đã nhận", bắn pháo hoa, đếm ngược 5 giây rồi đóng trang. Trình duyệt nào không cho
 trang tự đóng thì thiệp gập hai cánh lại kèm lời chào. Khách bấm *Ở lại xem thiệp* để huỷ đếm ngược.
 
-## Nối Google Sheet để nhận xác nhận (làm một lần)
+## Google Sheet nhận xác nhận
+
+Đã tạo sẵn bảng tính *Khách dự cưới Thắng & Ánh* trên Google Drive của chủ thiệp, script đẩy bằng `clasp`
+từ thư mục `apps-script/` (`.clasp.json` chỉ nằm trên máy, không đưa lên repo).
+Sửa `Code.gs` xong: `npx @google/clasp@2.4.2 push -f` rồi
+`npx @google/clasp@2.4.2 deploy -i AKfycbys-jaoNXd_4h9Xtx9L8dpjdY8gXkNHo0VvvhxVkrOw_RghT5nf33LR_4W-MWOo23XANg` để giữ nguyên URL.
+
+### Làm tay (khi cần tạo bảng tính mới)
 
 1. Mở <https://sheets.new>, đặt tên bảng tính, ví dụ *Khách dự cưới Thắng Ánh*.
 2. Menu **Tiện ích mở rộng → Apps Script**. Xoá code mẫu, dán toàn bộ [apps-script/Code.gs](apps-script/Code.gs), bấm **Lưu**.

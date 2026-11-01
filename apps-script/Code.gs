@@ -21,6 +21,8 @@ function doPost(e) {
   khoa.waitLock(20000);
   try {
     const d = JSON.parse((e && e.postData && e.postData.contents) || '{}');
+    // Gửi thử từ máy kiểm tra: chỉ xác nhận nối được, không ghi dòng nào
+    if (d.thu === true) { chuanBi_(); return traVe_({ ok: true, thu: true }); }
     const ten = sach_(d.ten, 60);
     if (!ten) return traVe_({ ok: false, loi: 'Thiếu tên khách' });
     const den = d.den === 'Có' ? 'Có' : 'Không';
@@ -40,6 +42,11 @@ function doPost(e) {
   } finally {
     khoa.releaseLock();
   }
+}
+
+// Chạy hàm này một lần trong trình soạn Apps Script để cấp quyền và tạo sẵn hai trang
+function capQuyen() {
+  chuanBi_();
 }
 
 // Mở URL /exec trên trình duyệt để kiểm tra: tạo sẵn hai trang nếu chưa có
