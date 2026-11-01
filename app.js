@@ -115,7 +115,8 @@
   // ---------- Dựng hình ----------
   const HOA_BIA = { w: 420, h: 500, goc: [210, 494], vung: { cx: 210, cy: 190, rx: 180, ry: 152 }, so: 27, hat: 11, buoc: true, tre: 0.2 };
   const HOA_DAU = { w: 620, h: 470, goc: [650, 485], vung: { cx: 318, cy: 172, rx: 272, ry: 136 }, so: 28, hat: 5, nhip: 0.05, boCongAnh: [{ dx: 0.22, dy: -0.42 }, { dx: -0.72, dy: 0.12, s: 0.6 }] };
-  const HOA_VOM = { w: 120, h: 190, goc: [60, 188], vung: { cx: 60, cy: 40, rx: 36, ry: 28 }, so: 5, hat: 21, boCongAnh: false, loai: { cuc: 2, cucHong: 1, nu: 3, coThi: 1 }, co: 2, laRong: 0, la: false, tre: 0.3 };
+  // Có ảnh cưới: bó hoa nhỏ nép góc trên bên phải, không che người trong ảnh
+  const HOA_DAU_ANH = { w: 620, h: 470, goc: [670, 470], vung: { cx: 440, cy: 112, rx: 190, ry: 88 }, so: 22, hat: 5, nhip: 0.05, co: 6, laRong: 2, boCongAnh: [{ dx: 0.05, dy: -0.4 }, { dx: -0.8, dy: 0.2, s: 0.55 }] };
   const HOA_CAM_ON = { w: 170, h: 230, goc: [85, 226], vung: { cx: 85, cy: 64, rx: 50, ry: 44 }, so: 7, hat: 8, boCongAnh: false, loai: { cucBe: 2, coThi: 2, nu: 3, biBi: 1 }, co: 3, laRong: 1 };
 
   function svgNiem(id) {
@@ -142,15 +143,151 @@
       `</svg>`;
   }
 
-  function veChuLong() {
-    const M = window.__MONO, svg = $('#chu-long');
-    if (!M || !svg) return;
-    const [x, y, w, h] = M.viewBox;
-    svg.setAttribute('viewBox', M.viewBox.join(' '));
-    svg.innerHTML = `<defs><linearGradient id="nhu-long" gradientUnits="userSpaceOnUse" x1="${x}" y1="${y}" x2="${x + w}" y2="${y + h}">` +
-      `<stop offset="0" stop-color="#7A5A2E"/><stop offset=".22" stop-color="#C9A465"/><stop offset=".4" stop-color="#F2DFAF"/><stop offset=".58" stop-color="#A9844E"/><stop offset=".8" stop-color="#E3C88E"/><stop offset="1" stop-color="#7E5F33"/>` +
-      `<animateTransform attributeName="gradientTransform" type="translate" values="-260 0;260 0;-260 0" dur="9s" repeatCount="indefinite"/></linearGradient></defs>` +
-      M.parts.map(p => `<path pathLength="1" d="${p.d}" fill="url(#nhu-long)"/>`).join('');
+  // ---------- Ảnh cưới (album.js do tools/xu_ly_anh.py sinh, chỉ có trên bản Cloudflare) ----------
+  const ALBUM = window.ALBUM && window.ALBUM.anh && window.ALBUM.anh.length ? window.ALBUM : null;
+  function choTai(im) {
+    if (im.complete && im.naturalWidth) im.classList.add('da-tai');
+    else im.addEventListener('load', () => im.classList.add('da-tai'), { once: true });
+  }
+
+  function datAnhThiep() {
+    if (!ALBUM) return;
+    document.body.classList.add('co-anh');
+    const r = ALBUM.rieng;
+    const dau = $('#anh-dau-img');
+    dau.src = r.bia.l;
+    choTai(dau);
+    $$('img[data-anh]').forEach(im => {
+      const a = r[im.dataset.anh];
+      if (!a) return;
+      (im.closest('.vom-anh') || im).style.backgroundImage = `url("${a.m}")`;
+      im.src = a.l;
+      choTai(im);
+    });
+  }
+
+  function dungCatAnh() {
+    if (!ALBUM) return;
+    $('#album').hidden = false;
+    $('#nut-album').textContent = `Xem cả album (${ALBUM.anh.length} ảnh)`;
+    const io = new IntersectionObserver(ds => ds.forEach(d => {
+      if (!d.isIntersecting) return;
+      io.unobserve(d.target);
+      d.target.classList.add('hien-anh');
+    }), { threshold: 0.25 });
+    ALBUM.noiBat.forEach(vt => {
+      const a = ALBUM.anh[vt - 1];
+      if (!a) return;
+      const f = document.createElement('figure');
+      f.className = 'in';
+      const nut = document.createElement('button');
+      nut.type = 'button';
+      nut.className = 'khung';
+      nut.setAttribute('aria-label', `Xem ảnh số ${vt} trong album`);
+      nut.style.setProperty('--ti-le', `${a.w} / ${a.h}`);
+      nut.style.backgroundImage = `url("${a.m}")`;
+      const im = new Image();
+      im.alt = '';
+      im.loading = 'lazy';
+      im.decoding = 'async';
+      im.src = a.s;
+      choTai(im);
+      nut.appendChild(im);
+      f.appendChild(nut);
+      $('#cat-anh').appendChild(f);
+      nut.addEventListener('click', () => moXem(vt - 1));
+      io.observe(f);
+    });
+  }
+
+  // Xem album: dải ảnh vuốt ngang, mỗi lần dừng đúng một ảnh
+  const xem = $('#xem-anh'), xk = $('#xa-khung');
+  let daDungXem = false, truocXem = null;
+  function dungXem() {
+    if (daDungXem) return;
+    daDungXem = true;
+    xk.innerHTML = ALBUM.anh.map((a, i) =>
+      `<div class="xa-anh"><img alt="Ảnh cưới ${i + 1}" loading="lazy" decoding="async" src="${a.l}" width="${a.w}" height="${a.h}" style="background-image:url('${a.m}')"></div>`).join('');
+    xk.addEventListener('scroll', demXem, { passive: true });
+  }
+  const viTriXem = () => Math.round(xk.scrollLeft / Math.max(1, xk.clientWidth));
+  function demXem() { $('#xa-dem').textContent = `${viTriXem() + 1} / ${ALBUM.anh.length}`; }
+  function moXem(i) {
+    if (!ALBUM) return;
+    dungXem();
+    truocXem = document.activeElement;
+    xem.hidden = false;
+    document.body.classList.add('dang-xem');
+    xk.scrollLeft = i * xk.clientWidth;
+    demXem();
+    $('#xa-dong').focus();
+  }
+  function dongXem() {
+    xem.hidden = true;
+    document.body.classList.remove('dang-xem');
+    if (truocXem) truocXem.focus();
+  }
+  const buocXem = n => xk.scrollBy({ left: n * xk.clientWidth, behavior: giam ? 'auto' : 'smooth' });
+
+  // Xem như phim: ảnh chuyển mờ dần, phóng chậm, chạy cùng hộp nhạc
+  const phim = $('#phim'), oPhim = $$('.phim-o', phim), THOI_PHIM = 5200;
+  let henPhim = 0, luotPhim = 0, anhPhim = 0, truocPhim = null;
+  function napAnh(src) {
+    return new Promise(xong => { const im = new Image(); im.onload = im.onerror = () => xong(); im.src = src; });
+  }
+  async function chieuPhim(i) {
+    const a = ALBUM.anh[i % ALBUM.anh.length];
+    anhPhim = i % ALBUM.anh.length;
+    await napAnh(a.l);
+    if (phim.hidden) return;
+    const o = oPhim[luotPhim++ % 2], cu = oPhim[luotPhim % 2];
+    o.querySelector('.phim-nen').src = a.s;
+    o.querySelector('.phim-chinh').src = a.l;
+    o.classList.remove('hien', 'kb1', 'kb2', 'kb3');
+    void o.offsetWidth;
+    o.classList.add('hien', 'kb' + (i % 3 + 1));
+    cu.classList.remove('hien');
+    const thanh = $('#phim-chay');
+    thanh.style.setProperty('--thoi', THOI_PHIM + 'ms');
+    thanh.classList.remove('chay'); void thanh.offsetWidth; thanh.classList.add('chay');
+    void napAnh(ALBUM.anh[(i + 1) % ALBUM.anh.length].l);
+    clearTimeout(henPhim);
+    henPhim = setTimeout(() => chieuPhim(i + 1), THOI_PHIM);
+  }
+  function moPhim(tu) {
+    if (!ALBUM) return;
+    truocPhim = document.activeElement;
+    toanManHinh();
+    if (CFG.nhac !== false && !HopNhac.dangChay) { HopNhac.batDau(); capNhatNutNhac(); }
+    phim.hidden = false;
+    document.body.classList.add('dang-xem');
+    $('#phim-dong').focus();
+    chieuPhim(tu || 0);
+  }
+  function dongPhim() {
+    clearTimeout(henPhim);
+    phim.hidden = true;
+    oPhim.forEach(o => o.classList.remove('hien'));
+    if (xem.hidden) document.body.classList.remove('dang-xem');
+    else xk.scrollLeft = anhPhim * xk.clientWidth;
+    if (truocPhim) truocPhim.focus();
+  }
+
+  if (ALBUM) {
+    $('#nut-album').addEventListener('click', () => moXem(0));
+    $('#nut-phim').addEventListener('click', () => moPhim(0));
+    $('#xa-dong').addEventListener('click', dongXem);
+    $('#xa-lui').addEventListener('click', () => buocXem(-1));
+    $('#xa-toi').addEventListener('click', () => buocXem(1));
+    $('#xa-phim').addEventListener('click', () => moPhim(viTriXem()));
+    $('#phim-dong').addEventListener('click', dongPhim);
+    document.addEventListener('keydown', e => {
+      if (!phim.hidden) { if (e.key === 'Escape') dongPhim(); return; }
+      if (xem.hidden) return;
+      if (e.key === 'Escape') dongXem();
+      else if (e.key === 'ArrowRight') buocXem(1);
+      else if (e.key === 'ArrowLeft') buocXem(-1);
+    });
   }
 
   function veLich() {
@@ -325,7 +462,7 @@
   }
 
   function chayMoDau() {
-    $('#mo-dau').classList.add('moc-hoa');
+    $('#mo-dau').classList.add('moc-hoa', 'chay-anh');
     setTimeout(() => vietChu($('.ten-re .chu-nhu'), 1.6), 700);
     setTimeout(() => $('.truong').classList.add('hien'), 2100);
     setTimeout(() => vietChu($('.ten-dau .chu-nhu'), 1.45), 2300);
@@ -356,19 +493,22 @@
   };
 
   // Pháo hoa trên màn tối; xongPhaoCuoi: đã bắn màn cuối (cuộn tới chữ ký hoặc lúc gửi xác nhận)
-  let daBan = false, xongPhaoCuoi = false;
+  let daBan = false, xongPhaoCuoi = false, phaoLaCuoi = false, henTatPhao = 0;
+  function tatPhao() {
+    clearTimeout(henTatPhao);
+    document.body.classList.remove('phao-hoa');
+    setTimeout(() => { HatBay.datManDem(0); daBan = false; }, 1200);
+  }
   function phaoHoa(o) {
     o = o || {};
     if (daBan || giam) return;
     daBan = true;
     xongPhaoCuoi = true;
+    phaoLaCuoi = !!o.cuoi;
     document.body.classList.add('phao-hoa');
     HatBay.datManDem(1);
-    setTimeout(() => HatBay.phao({ lan: o.lan || 7, nhip: o.nhip || 560 }), 500);
-    setTimeout(() => {
-      document.body.classList.remove('phao-hoa');
-      setTimeout(() => { HatBay.datManDem(0); daBan = false; }, 1200);
-    }, o.giu || 7000);
+    setTimeout(() => { if (daBan) HatBay.phao({ lan: o.lan || 7, nhip: o.nhip || 560 }); }, 500);
+    henTatPhao = setTimeout(tatPhao, o.giu || 7000);
   }
 
   function batTheoDoi() {
@@ -385,10 +525,15 @@
     const ioPhao = new IntersectionObserver(ds => {
       if (!ds.some(d => d.isIntersecting)) return;
       ioPhao.disconnect();
-      setTimeout(() => { if (!xongPhaoCuoi) phaoHoa(); }, 600);
+      setTimeout(() => { if (!xongPhaoCuoi) phaoHoa({ cuoi: true }); }, 600);
     }, { threshold: 1 });
     ioPhao.observe($('.ky'));
-    $('.ky').addEventListener('click', () => phaoHoa());
+    // Khách cuộn đi chỗ khác thì tắt màn tối của pháo hoa cuối thiệp
+    const ioRoi = new IntersectionObserver(ds => {
+      if (ds.some(d => !d.isIntersecting) && daBan && phaoLaCuoi) tatPhao();
+    });
+    ioRoi.observe($('#cam-on'));
+    $('.ky').addEventListener('click', () => phaoHoa({ cuoi: true }));
     capNhatCuon();
   }
 
@@ -553,16 +698,16 @@
   document.addEventListener('visibilitychange', () => setTimeout(capNhatNutNhac, 50));
 
   document.addEventListener('pointerdown', e => {
-    if (e.target.closest('a, button, input, textarea, label, select, output, .phieu')) return;
+    if (e.target.closest('a, button, input, textarea, label, select, output, .phieu, .xem-anh, .phim')) return;
     HatBay.thoi(e.clientX, e.clientY);
   }, { passive: true });
 
   // ---------- Khởi động ----------
   async function khoiDong() {
-    $('#hoa-dau').innerHTML = HoaKho.bo(HOA_DAU);
-    $('#vom-hoa').innerHTML = HoaKho.bo(HOA_VOM);
+    $('#hoa-dau').innerHTML = HoaKho.bo(ALBUM ? HOA_DAU_ANH : HOA_DAU);
     $('#hoa-cam-on').innerHTML = HoaKho.bo(HOA_CAM_ON);
-    veChuLong();
+    datAnhThiep();
+    dungCatAnh();
     veLich();
     dungBia();
     dienPhieu();

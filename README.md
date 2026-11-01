@@ -56,13 +56,20 @@ Bảng tính có hai trang:
 
 Sửa code Apps Script sau này thì phải **Triển khai → Quản lý các bản triển khai → sửa → Phiên bản mới** để URL cũ chạy code mới.
 
+## Ảnh cưới
+
+Ảnh gốc nằm ở `C:\HCM_UTE\Ánh` (studio Namitaly). `python tools/xu_ly_anh.py` bỏ ảnh trùng, thu nhỏ, xoá thông tin
+máy chụp, ghi vào `anh/` và sinh `album.js`; thứ tự album và ảnh dùng riêng (mở đầu, ô vòm, lời cảm ơn) ở
+`tools/thu_tu_anh.json` (số ảnh theo bảng `python tools/xu_ly_anh.py xem`). `anh/`, `album.js` và `og.jpg`
+**không đưa lên GitHub**, chỉ đẩy lên Cloudflare bằng `python tools/trien_khai.py`.
+
 ## Sửa nội dung
 
 | Muốn đổi | Sửa ở |
 |---|---|
 | Chữ trên thiệp (tên bố mẹ, địa chỉ, giờ) | `index.html` |
 | URL Google Sheet, ngày giờ đếm ngược, bật/tắt nhạc | `config.js` |
-| Ảnh hiện khi gửi link | `tools/og.html`, rồi chạy `python tools/chup_og.py` ra `og.jpg` |
+| Ảnh hiện khi gửi link | `tools/og.html`, rồi chạy `python tools/chup_og.py` ra `og.jpg` (cần `anh/`) |
 
 Facebook lưu ảnh xem trước một thời gian. Đổi `og.jpg` xong thì chạy lại `python tools/trien_khai.py`, dán link vào
 <https://developers.facebook.com/tools/debug/> bấm *Scrape Again* để cập nhật.
@@ -76,7 +83,8 @@ Thử phần xác nhận khi chưa nối Google Sheet: thêm `?thu=1` vào cuố
 - `flora.js`: bó hoa khô vẽ bằng SVG theo hạt giống, mọc dần khi xuất hiện
 - `hat.js`: hạt bồ công anh, vụn nhũ vàng, sao lấp lánh, tim, pháo hoa (canvas)
 - `nhac.js`: hộp nhạc Canon in D tổng hợp bằng Web Audio (không cần file nhạc)
-- `monogram.js`: chữ lồng T&A
+- `monogram.js`: chữ lồng T&A trên dấu niêm
+- `tools/xu_ly_anh.py`, `tools/thu_tu_anh.json`: xử lý ảnh cưới cho album
 - `tao-link.html`: trang tạo link mời
 - `functions/_middleware.js`: Cloudflare Pages Function ghi tên khách vào khung xem trước
 - `tools/trien_khai.py`: dựng `dist/` và đẩy lên Cloudflare Pages

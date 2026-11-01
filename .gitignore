@@ -3,3 +3,6 @@ __pycache__/
 .clasp.json
 dist/
 .wrangler/
+anh/
+album.js
+og.jpg

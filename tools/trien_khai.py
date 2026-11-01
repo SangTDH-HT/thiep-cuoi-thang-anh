@@ -7,7 +7,7 @@ import sys
 
 DU_AN = "thanganh"
 FILE_TRANG = ["index.html", "style.css", "config.js", "app.js", "flora.js", "hat.js", "nhac.js",
-              "monogram.js", "favicon.svg", "og.jpg", "tao-link.html"]
+              "monogram.js", "favicon.svg", "og.jpg", "tao-link.html", "album.js"]
 
 goc = pathlib.Path(__file__).resolve().parent.parent
 dist = goc / "dist"
@@ -15,6 +15,8 @@ shutil.rmtree(dist, ignore_errors=True)
 dist.mkdir()
 for ten in FILE_TRANG:
     shutil.copy2(goc / ten, dist / ten)
+# Ảnh cưới chỉ đưa lên Cloudflare, không đưa lên GitHub (xem .gitignore)
+shutil.copytree(goc / "anh", dist / "anh")
 # Chỉ trang chủ đi qua Function (đổi tên khách trong khung xem trước); file tĩnh phục vụ thẳng, không tính lượt Function
 (dist / "_routes.json").write_text('{"version": 1, "include": ["/", "/index.html"], "exclude": []}\n', encoding="utf-8")
 (dist / "_headers").write_text(

@@ -77,6 +77,7 @@
 
   <!-- Mở đầu: tên dâu rể -->
   <section class="mo-dau" id="mo-dau" aria-label="Quang Thắng và Ngọc Ánh">
+    <div class="anh-dau" id="anh-dau" aria-hidden="true"><img id="anh-dau-img" alt="" decoding="async" fetchpriority="high"></div>
     <div class="hoa-dau" id="hoa-dau"></div>
     <div class="cap-doi">
       <p class="ten-doi ten-re"><span class="chu-nhu" data-viet>Quang Thắng</span></p>
@@ -124,10 +125,7 @@
   <!-- Save the date -->
   <section class="giu-ngay" id="giu-ngay" data-hien>
     <div class="vom">
-      <div class="vom-dau">
-        <div class="vom-hoa" id="vom-hoa"></div>
-        <svg class="chu-long" id="chu-long" aria-hidden="true"></svg>
-      </div>
+      <div class="vom-anh"><img data-anh="vom" alt="Quang Thắng và Ngọc Ánh dưới giàn hoa" decoding="async" loading="lazy"></div>
       <h2 class="save">Save the Date</h2>
       <p class="thang">Tháng 11 – 2026</p>
       <p class="an-di">Thứ Bảy, ngày 28 tháng 11 năm 2026</p>
@@ -140,6 +138,16 @@
         <div class="dem-o"><span class="dem-so" data-o="giay">00</span><span class="dem-chu">giây</span></div>
       </div>
       <p class="dem-xong" id="dem-xong" hidden></p>
+    </div>
+  </section>
+
+  <!-- Album ảnh cưới (ảnh nằm ở anh/ + album.js, chỉ có trên bản Cloudflare) -->
+  <section class="album" id="album" data-hien hidden>
+    <h2 class="tieu-de">Album ảnh cưới</h2>
+    <div class="cat-anh" id="cat-anh"></div>
+    <div class="album-nut">
+      <button class="nut-phim" id="nut-phim" type="button">Xem như phim</button>
+      <button class="nut-phu" id="nut-album" type="button">Xem cả album</button>
     </div>
   </section>
 
@@ -241,6 +249,7 @@
   <footer class="cam-on" id="cam-on" data-hien>
     <div class="dan-bang">
       <div class="dan-hoa" id="hoa-cam-on"></div>
+      <figure class="anh-in"><img data-anh="camon" alt="Quang Thắng và Ngọc Ánh trong khu vườn" decoding="async" loading="lazy"></figure>
       <span class="bang-keo" aria-hidden="true"></span>
     </div>
     <p class="thank" data-viet>Thank you</p>
@@ -253,7 +262,29 @@
   <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M12 23V8l13-3v15"/><circle cx="9" cy="23" r="3.2"/><circle cx="22" cy="20" r="3.2"/></svg>
 </button>
 
+<!-- Xem album: vuốt qua lại -->
+<div class="xem-anh" id="xem-anh" role="dialog" aria-modal="true" aria-label="Album ảnh cưới" hidden>
+  <div class="xa-khung" id="xa-khung"></div>
+  <div class="xa-tren">
+    <span class="xa-dem" id="xa-dem"></span>
+    <button class="xa-nut" id="xa-dong" type="button" aria-label="Đóng album"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <button class="xa-nut xa-lui" id="xa-lui" type="button" aria-label="Ảnh trước"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <button class="xa-nut xa-toi" id="xa-toi" type="button" aria-label="Ảnh sau"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+  <button class="xa-phim" id="xa-phim" type="button">Xem như phim</button>
+</div>
+
+<!-- Xem như phim: trình chiếu toàn màn hình -->
+<div class="phim" id="phim" role="dialog" aria-modal="true" aria-label="Trình chiếu album ảnh cưới" hidden>
+  <div class="phim-o"><img class="phim-nen" alt=""><img class="phim-chinh" alt=""></div>
+  <div class="phim-o"><img class="phim-nen" alt=""><img class="phim-chinh" alt=""></div>
+  <p class="phim-ten">Quang Thắng <span>&amp;</span> Ngọc Ánh</p>
+  <div class="phim-chay" aria-hidden="true"><span id="phim-chay"></span></div>
+  <button class="xa-nut phim-dong" id="phim-dong" type="button" aria-label="Dừng trình chiếu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+</div>
+
 <script src="config.js"></script>
+<script src="album.js"></script>
 <script src="monogram.js"></script>
 <script src="flora.js"></script>
 <script src="hat.js"></script>
