@@ -15,6 +15,8 @@ shutil.rmtree(dist, ignore_errors=True)
 dist.mkdir()
 for ten in FILE_TRANG:
     shutil.copy2(goc / ten, dist / ten)
+# Chỉ trang chủ đi qua Function (đổi tên khách trong khung xem trước); file tĩnh phục vụ thẳng, không tính lượt Function
+(dist / "_routes.json").write_text('{"version": 1, "include": ["/", "/index.html"], "exclude": []}\n', encoding="utf-8")
 (dist / "_headers").write_text(
     "/*\n  X-Robots-Tag: noindex\n  Referrer-Policy: strict-origin-when-cross-origin\n", encoding="utf-8")
 
