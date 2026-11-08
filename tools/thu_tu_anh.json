@@ -1,42 +1,31 @@
 {
-  "_ghi_chu": "Số = số ảnh trong bảng 'python tools/xu_ly_anh.py xem'. album: thứ tự trong album; noi_bat: vị trí (trong album) của 3 ảnh xếp chồng hiện trên thiệp (ảnh đầu nằm trên cùng); rieng: ảnh mở đầu (bia), ô vòm Save the Date (vom), lời cảm ơn (camon).",
+  "_ghi_chu": "Tên tệp (không đuôi) trong C:\\HCM_UTE\\Ánh\\Ảnh cưới\\Album hoặc \\Ảnh để trên thiệp; xem bảng ảnh: python tools/xu_ly_anh.py xem. album: thứ tự ảnh trong album và khi xem như phim. in: khung cắt 4:5 cho ảnh in nhỏ [trái %, trên %, rộng %] (cao tự tính), ảnh không ghi thì lấy cả bề ngang. noi_bat: 3 ảnh xếp chồng trên thiệp (ảnh đầu nằm trên cùng, ảnh 2 lệch trái, ảnh 3 lệch phải). rieng (lấy trước từ thư mục Ảnh để trên thiệp): bia = ảnh mở đầu, vom = ô vòm Save the Date, camon = ảnh in lời cảm ơn, og = ảnh hiện khi gửi link (tools/og.html → og.jpg); tam = điểm giữ khi cắt (object-position).",
   "album": [
-    18,
-    3,
-    7,
-    12,
-    13,
-    10,
-    11,
-    5,
-    6,
-    8,
-    9,
-    16,
-    17,
-    14,
-    15,
-    1,
-    2,
-    4,
-    27,
-    19,
-    20,
-    22,
-    23,
-    24,
-    25,
-    26,
-    21
+    "DN_04715",
+    "DN_04838_1",
+    "DN_05887_1",
+    "DN_05917_1",
+    "DN_05760_1",
+    "DN_05667_1",
+    "DN_05656_1",
+    "DN_04021_1",
+    "DN_04123_1",
+    "DN_04261_1",
+    "DN_04250_1",
+    "DN_04518",
+    "DN_05192_1",
+    "DN_05288_1"
   ],
-  "noi_bat": [
-    2,
-    7,
-    1
-  ],
+  "in": {
+    "DN_04021_1": [0, 2, 100],
+    "DN_05887_1": [22, 8, 78],
+    "DN_05760_1": [0, 6, 86]
+  },
+  "noi_bat": ["DN_04021_1", "DN_05887_1", "DN_05760_1"],
   "rieng": {
-    "bia": 21,
-    "vom": 8,
-    "camon": 12
+    "bia": { "tep": "DN_04838_1", "tam": "50% 12%" },
+    "vom": { "tep": "DN_04123_1", "tam": "50% 30%" },
+    "camon": { "tep": "DN_05656_1", "in": [14, 7, 64] },
+    "og": { "tep": "DN_04715", "in": [6, 6, 70] }
   }
 }

@@ -58,9 +58,12 @@ Sửa code Apps Script sau này thì phải **Triển khai → Quản lý các b
 
 ## Ảnh cưới
 
-Ảnh gốc nằm ở `C:\HCM_UTE\Ánh` (studio Namitaly). `python tools/xu_ly_anh.py` bỏ ảnh trùng, thu nhỏ, xoá thông tin
-máy chụp, ghi vào `anh/` và sinh `album.js`; thứ tự album và ảnh dùng riêng (mở đầu, ô vòm, lời cảm ơn) ở
-`tools/thu_tu_anh.json` (số ảnh theo bảng `python tools/xu_ly_anh.py xem`). `anh/`, `album.js` và `og.jpg`
+Ảnh gốc là bản chỉnh sửa cuối của studio Namitaly, chỉ lấy từ hai thư mục `C:\HCM_UTE\Ánh\Ảnh cưới\Album` và
+`C:\HCM_UTE\Ánh\Ảnh cưới\Ảnh để trên thiệp`. `python tools/xu_ly_anh.py` (Python có Pillow) đổi hệ màu Adobe RGB của
+studio sang sRGB (để nguyên thì ảnh lên web bị nhạt), xuất mỗi ảnh vài cỡ cho `srcset` (màn nét tải ảnh lớn, máy thường
+tải ảnh vừa), cắt khung 4:5 sát người cho ảnh in nhỏ, làm nét nhẹ, xoá thông tin máy chụp, ghi vào `anh/` và sinh
+`album.js`. Thứ tự album, khung cắt ảnh in, 3 ảnh xếp chồng và ảnh dùng riêng (mở đầu, ô vòm, lời cảm ơn) ghi bằng tên
+tệp trong `tools/thu_tu_anh.json` (bảng ảnh có tên: `python tools/xu_ly_anh.py xem`). `anh/`, `album.js` và `og.jpg`
 **không đưa lên GitHub**, chỉ đẩy lên Cloudflare bằng `python tools/trien_khai.py`.
 
 ## Sửa nội dung

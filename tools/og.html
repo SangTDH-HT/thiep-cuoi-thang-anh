@@ -10,7 +10,7 @@
   .khung { position: absolute; inset: 22px; background: var(--giay) var(--noise); box-shadow: 0 2px 4px rgba(60,45,30,.15), 0 20px 50px -20px rgba(60,45,30,.45); overflow: hidden; }
   /* Ảnh cưới trong ô vòm bên trái, viền chỉ nhũ */
   .vom-og { position: absolute; left: 40px; top: 30px; bottom: 30px; width: 400px; border-radius: 200px 200px 8px 8px; overflow: hidden; box-shadow: 0 20px 40px -24px rgba(60,45,30,.6); }
-  .vom-og img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; }
+  .vom-og img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
   .vom-og::after { content: ""; position: absolute; inset: 9px; border: 1.5px solid rgba(240,222,178,.95); border-radius: 191px 191px 4px 4px; }
   .hoa { position: absolute; right: -150px; top: -60px; width: 640px; height: 485px; opacity: .95; }
   .hoa-kho .canh, .hoa-kho .day { stroke-dashoffset: 0; }
@@ -32,7 +32,7 @@
 <body>
   <div class="khung">
     <div class="hoa" id="hoa"></div>
-    <div class="vom-og"><img src="../anh/03.jpg" alt=""></div>
+    <div class="vom-og"><img id="anh-og" alt=""></div>
     <div class="chu">
       <p class="moi">Trân trọng kính mời</p>
       <p class="ten"><span class="chu-nhu">Quang Thắng</span></p>
@@ -42,6 +42,11 @@
       <p class="noi">11 giờ, Tầng 2 Khách sạn Sailing, Hà Tĩnh</p>
     </div>
   </div>
+  <script src="../album.js"></script>
+  <script>
+    // Ảnh "og" trong tools/thu_tu_anh.json (đã cắt sát người); chưa chọn thì lấy ảnh trên cùng của xấp ảnh trên thiệp
+    document.getElementById('anh-og').src = '../' + (ALBUM.rieng.og || ALBUM.anh[ALBUM.noiBat[0] - 1]).l;
+  </script>
   <script src="../flora.js"></script>
   <script>
     document.getElementById('hoa').innerHTML = HoaKho.bo({ w: 620, h: 470, goc: [670, 470], vung: { cx: 440, cy: 120, rx: 200, ry: 95 }, so: 24, hat: 5, co: 6, boCongAnh: [{ dx: 0.05, dy: -0.4 }] });

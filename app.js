@@ -149,19 +149,36 @@
     if (im.complete && im.naturalWidth) im.classList.add('da-tai');
     else im.addEventListener('load', () => im.classList.add('da-tai'), { once: true });
   }
+  // Bề rộng ảnh khi hiện (sizes): trình duyệt nhân với mật độ điểm ảnh của màn hình rồi chọn cỡ trong srcset,
+  // nên iPhone màn nét tải ảnh lớn, máy thường tải ảnh vừa
+  const CO_ANH = {
+    bia: 'max(min(100vw, 600px), 52vh, 437px)',
+    vom: 'min(calc(100vw - 56px), 406px)',
+    camon: '194px',
+    in: '240px',
+    xem: 'min(100vw, calc((100vh - 148px) * .667))',
+    phim: 'min(100vw, 66.7vh)' // cùng cỡ với lúc xem album: ảnh đã xem rồi không phải tải lại
+  };
+  function ganAnh(im, a, co) {
+    if (a.ls) { im.sizes = co; im.srcset = a.ls; }
+    im.src = a.l;
+    if (a.p) im.style.objectPosition = a.p;
+  }
 
   function datAnhThiep() {
     if (!ALBUM) return;
     document.body.classList.add('co-anh');
     const r = ALBUM.rieng;
     const dau = $('#anh-dau-img');
-    dau.src = r.bia.l;
+    ganAnh(dau, r.bia, CO_ANH.bia);
     choTai(dau);
     $$('img[data-anh]').forEach(im => {
       const a = r[im.dataset.anh];
       if (!a) return;
-      (im.closest('.vom-anh') || im).style.backgroundImage = `url("${a.m}")`;
-      im.src = a.l;
+      const nen = im.closest('.vom-anh') || im;
+      nen.style.backgroundImage = `url("${a.m}")`;
+      if (a.p) nen.style.backgroundPosition = a.p;
+      ganAnh(im, a, CO_ANH[im.dataset.anh]);
       choTai(im);
     });
   }
@@ -188,11 +205,12 @@
       nut.type = 'button';
       nut.className = 'khung';
       nut.setAttribute('aria-label', `Xem ảnh số ${vt} trong album`);
-      nut.style.backgroundImage = `url("${a.m}")`;
+      nut.style.backgroundImage = `url("${a.mi || a.m}")`;
       const im = new Image();
       im.alt = '';
       im.loading = 'lazy';
       im.decoding = 'async';
+      if (a.ss) { im.sizes = CO_ANH.in; im.srcset = a.ss; }
       im.src = a.s;
       choTai(im);
       nut.appendChild(im);
@@ -209,7 +227,7 @@
     if (daDungXem) return;
     daDungXem = true;
     xk.innerHTML = ALBUM.anh.map((a, i) =>
-      `<div class="xa-anh"><img alt="Ảnh cưới ${i + 1}" loading="lazy" decoding="async" src="${a.l}" width="${a.w}" height="${a.h}" style="background-image:url('${a.m}')"></div>`).join('');
+      `<div class="xa-anh"><img alt="Ảnh cưới ${i + 1}" loading="lazy" decoding="async" src="${a.l}"${a.ls ? ` srcset="${a.ls}" sizes="${CO_ANH.xem}"` : ''} width="${a.w}" height="${a.h}" style="background-image:url('${a.m}')"></div>`).join('');
     xk.addEventListener('scroll', demXem, { passive: true });
   }
   const viTriXem = () => Math.round(xk.scrollLeft / Math.max(1, xk.clientWidth));
@@ -234,17 +252,22 @@
   // Xem như phim: ảnh chuyển mờ dần, phóng chậm, chạy cùng hộp nhạc
   const phim = $('#phim'), oPhim = $$('.phim-o', phim), THOI_PHIM = 5200;
   let henPhim = 0, luotPhim = 0, anhPhim = 0, truocPhim = null;
-  function napAnh(src) {
-    return new Promise(xong => { const im = new Image(); im.onload = im.onerror = () => xong(); im.src = src; });
+  // Tải trước đúng cỡ mà ảnh chiếu sẽ chọn (cùng srcset + sizes) để lúc chuyển ảnh không phải chờ
+  function napAnh(a) {
+    return new Promise(xong => {
+      const im = new Image();
+      im.onload = im.onerror = () => xong();
+      ganAnh(im, a, CO_ANH.phim);
+    });
   }
   async function chieuPhim(i) {
     const a = ALBUM.anh[i % ALBUM.anh.length];
     anhPhim = i % ALBUM.anh.length;
-    await napAnh(a.l);
+    await napAnh(a);
     if (phim.hidden) return;
     const o = oPhim[luotPhim++ % 2], cu = oPhim[luotPhim % 2];
     o.querySelector('.phim-nen').src = a.s;
-    o.querySelector('.phim-chinh').src = a.l;
+    ganAnh(o.querySelector('.phim-chinh'), a, CO_ANH.phim);
     o.classList.remove('hien', 'kb1', 'kb2', 'kb3');
     void o.offsetWidth;
     o.classList.add('hien', 'kb' + (i % 3 + 1));
@@ -252,7 +275,7 @@
     const thanh = $('#phim-chay');
     thanh.style.setProperty('--thoi', THOI_PHIM + 'ms');
     thanh.classList.remove('chay'); void thanh.offsetWidth; thanh.classList.add('chay');
-    void napAnh(ALBUM.anh[(i + 1) % ALBUM.anh.length].l);
+    void napAnh(ALBUM.anh[(i + 1) % ALBUM.anh.length]);
     clearTimeout(henPhim);
     henPhim = setTimeout(() => chieuPhim(i + 1), THOI_PHIM);
   }
