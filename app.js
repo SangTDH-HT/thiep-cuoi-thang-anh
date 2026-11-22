@@ -41,6 +41,13 @@
     const t = tenHien();
     $$('.ten-viet').forEach(el => { el.textContent = t; });
     vuaKhung();
+    capNhatMung();
+  }
+  // Mã mừng cưới ghi tên khách: link riêng / tên gõ ở bìa; link chung thì lấy tên đã gửi xác nhận
+  function capNhatMung() {
+    if (!window.MungCuoi) return;
+    const xn = kho.doc('xn');
+    MungCuoi.ve(khach && !khach.chung ? khach.ten : (xn && xn.ten) || '');
   }
   // Tên dài thì thu nhỏ cho vừa dòng chấm
   function vuaKhung() {
@@ -670,6 +677,7 @@
       return baoLoi(err.message);
     }
     kho.ghi('xn', goi);
+    capNhatMung();
     nutGui.disabled = false;
     bao.textContent = '';
     hienDaGui(goi, true);
@@ -725,7 +733,7 @@
   document.addEventListener('visibilitychange', () => setTimeout(capNhatNutNhac, 50));
 
   document.addEventListener('pointerdown', e => {
-    if (e.target.closest('a, button, input, textarea, label, select, output, .phieu, .xem-anh, .phim')) return;
+    if (e.target.closest('a, button, input, textarea, label, select, output, .phieu, .phong-bi, .xem-anh, .phim')) return;
     HatBay.thoi(e.clientX, e.clientY);
   }, { passive: true });
 
@@ -733,6 +741,8 @@
   async function khoiDong() {
     $('#hoa-dau').innerHTML = HoaKho.bo(ALBUM ? HOA_DAU_ANH : HOA_DAU);
     $('#hoa-cam-on').innerHTML = HoaKho.bo(HOA_CAM_ON);
+    $('#niem-bi').innerHTML = svgNiem('nb');
+    capNhatMung();
     datAnhThiep();
     dungCatAnh();
     veLich();

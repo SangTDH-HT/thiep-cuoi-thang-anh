@@ -7,7 +7,7 @@ import sys
 
 DU_AN = "thanganh"
 FILE_TRANG = ["index.html", "style.css", "config.js", "app.js", "flora.js", "hat.js", "nhac.js",
-              "monogram.js", "favicon.svg", "og.jpg", "tao-link.html", "album.js"]
+              "monogram.js", "favicon.svg", "og.jpg", "tao-link.html", "album.js", "qrcode.min.js", "mungcuoi.js"]
 
 goc = pathlib.Path(__file__).resolve().parent.parent
 dist = goc / "dist"

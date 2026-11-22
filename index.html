@@ -178,6 +178,39 @@
     </ol>
   </section>
 
+  <!-- Mừng cưới: phong bì có dấu niêm, trong là mã VietQR ghi sẵn tên khách + lời chúc (mungcuoi.js) -->
+  <section class="mung-cuoi" id="mung-cuoi" data-hien>
+    <h2 class="tieu-de">Mừng cưới</h2>
+    <p class="dan">Quý khách có thể gửi quà mừng qua mã dưới đây. Tên và lời chúc của Quý khách đã được ghi sẵn trong nội dung chuyển khoản.</p>
+    <div class="phong-bi">
+      <svg class="nap-bi" viewBox="0 0 400 84" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0H400L213 79Q200 86 187 79Z"/></svg>
+      <div class="niem-bi" id="niem-bi" aria-hidden="true"></div>
+      <figure class="to-qr">
+        <img id="anh-qr" width="250" height="250" alt="Mã QR chuyển khoản" decoding="async">
+        <figcaption>
+          <span class="chu-tk" id="chu-tk"></span>
+          <span class="ngan-hang" id="ngan-hang"></span>
+        </figcaption>
+      </figure>
+      <div class="dong-chep">
+        <span class="nhan-chep">Số tài khoản</span>
+        <div class="gia-tri">
+          <span class="so-tk" id="so-tk"></span>
+          <button class="nut-chep" type="button" data-chep="so-tk"><span class="chu-nut">Chép</span><span class="an-di"> số tài khoản</span></button>
+        </div>
+      </div>
+      <div class="dong-chep">
+        <span class="nhan-chep">Nội dung chuyển khoản</span>
+        <div class="gia-tri">
+          <span class="nd-ck" id="nd-ck"></span>
+          <button class="nut-chep" type="button" data-chep="nd-ck"><span class="chu-nut">Chép</span><span class="an-di"> nội dung chuyển khoản</span></button>
+        </div>
+      </div>
+      <button class="nut-gui nut-luu" id="nut-luu-qr" type="button">Lưu ảnh mã QR</button>
+      <p class="huong-dan">Mở ứng dụng ngân hàng, chọn quét mã QR rồi lấy ảnh vừa lưu. Cũng có thể nhấn giữ vào mã để lưu ảnh.</p>
+    </div>
+  </section>
+
   <!-- Xác nhận tham dự -->
   <section class="xac-nhan" id="xac-nhan" data-hien>
     <h2 class="tieu-de">Xác nhận tham dự</h2>
@@ -284,6 +317,8 @@
 </div>
 
 <script src="config.js"></script>
+<script src="qrcode.min.js"></script>
+<script src="mungcuoi.js"></script>
 <script src="album.js"></script>
 <script src="monogram.js"></script>
 <script src="flora.js"></script>
