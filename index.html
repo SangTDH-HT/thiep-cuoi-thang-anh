@@ -178,36 +178,56 @@
     </ol>
   </section>
 
-  <!-- Mừng cưới: phong bì có dấu niêm, trong là mã VietQR ghi sẵn tên khách + lời chúc (mungcuoi.js) -->
+  <!-- Mừng cưới: phong bì đỏ ghi tay lời chúc + tên khách; chạm dấu niêm thì thiệp mã VietQR trồi lên (mungcuoi.js) -->
   <section class="mung-cuoi" id="mung-cuoi" data-hien>
-    <h2 class="tieu-de">Mừng cưới</h2>
-    <p class="dan">Quý khách có thể gửi quà mừng qua mã dưới đây. Tên và lời chúc của Quý khách đã được ghi sẵn trong nội dung chuyển khoản.</p>
-    <div class="phong-bi">
-      <svg class="nap-bi" viewBox="0 0 400 84" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0H400L213 79Q200 86 187 79Z"/></svg>
-      <div class="niem-bi" id="niem-bi" aria-hidden="true"></div>
-      <figure class="to-qr">
-        <img id="anh-qr" width="250" height="250" alt="Mã QR chuyển khoản" decoding="async">
-        <figcaption>
-          <span class="chu-tk" id="chu-tk"></span>
-          <span class="ngan-hang" id="ngan-hang"></span>
-        </figcaption>
-      </figure>
-      <div class="dong-chep">
-        <span class="nhan-chep">Số tài khoản</span>
-        <div class="gia-tri">
-          <span class="so-tk" id="so-tk"></span>
-          <button class="nut-chep" type="button" data-chep="so-tk"><span class="chu-nut">Chép</span><span class="an-di"> số tài khoản</span></button>
+    <h2 class="tieu-de">Gửi lời chúc phúc</h2>
+    <p class="dan tho">Phương xa chưa tiện ghé thăm,<br>Gửi trao tình cảm nghìn năm vẹn tròn.</p>
+    <p class="dan">Hai chúng tôi xin trân trọng đón&nbsp;nhận qua phong bì nhỏ dưới đây.</p>
+
+    <div class="bi-san" id="bi-san">
+      <div class="bi" id="bi">
+        <div class="bi-lung" aria-hidden="true"></div>
+        <figure class="bi-the" id="bi-the">
+          <p class="the-doi" id="the-doi"></p>
+          <img id="anh-qr" width="190" height="190" alt="Mã QR chuyển khoản" decoding="async">
+          <figcaption>
+            <span class="chu-tk" id="chu-tk"></span>
+            <span class="tk-dong" id="tk-dong"><em id="ngan-hang"></em> <span class="so-tk" id="so-tk"></span></span>
+          </figcaption>
+        </figure>
+        <svg class="bi-tui" viewBox="0 0 290 368" aria-hidden="true">
+          <defs>
+            <linearGradient id="tui-g" x1="0" y1="0" x2=".4" y2="1"><stop offset="0" stop-color="#B04A41"/><stop offset=".55" stop-color="#9C3B34"/><stop offset="1" stop-color="#84302A"/></linearGradient>
+            <linearGradient id="day-g" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#8C332D"/><stop offset="1" stop-color="#A9443B"/></linearGradient>
+            <filter id="day-bong" x="-10%" y="-20%" width="120%" height="140%"><feDropShadow dx="0" dy="-2" stdDeviation="2.6" flood-color="#3D0F0B" flood-opacity=".38"/></filter>
+          </defs>
+          <path d="M0 6Q0 1 5 3L145 110L285 3Q290 1 290 6V361Q290 368 283 368H7Q0 368 0 361Z" fill="url(#tui-g)"/>
+          <path d="M1 4L145 110L289 4" fill="none" stroke="#F1C9B2" stroke-opacity=".3" stroke-width="1"/>
+          <path d="M0 366L135 178Q145 166 155 178L290 366Z" fill="url(#day-g)" filter="url(#day-bong)"/>
+        </svg>
+        <div class="bi-chu" aria-hidden="true">
+          <p class="bi-loi" id="bi-loi"></p>
+          <p class="bi-tu" id="bi-tu"></p>
         </div>
+        <div class="bi-nap" aria-hidden="true"><div class="nap-ngoai"></div><div class="nap-trong"></div></div>
+        <div class="bi-niem" id="bi-niem" aria-hidden="true"></div>
+        <button class="bi-mo" id="bi-mo" type="button" aria-expanded="false" aria-controls="bi-chi-tiet"><span class="an-di">Mở phong bì mừng cưới</span></button>
       </div>
-      <div class="dong-chep">
-        <span class="nhan-chep">Nội dung chuyển khoản</span>
-        <div class="gia-tri">
-          <span class="nd-ck" id="nd-ck"></span>
-          <button class="nut-chep" type="button" data-chep="nd-ck"><span class="chu-nut">Chép</span><span class="an-di"> nội dung chuyển khoản</span></button>
-        </div>
-      </div>
+    </div>
+    <p class="bi-goi-y" id="bi-goi-y" aria-hidden="true">Chạm vào dấu niêm để mở phong bì</p>
+
+    <div class="bi-chi-tiet" id="bi-chi-tiet" hidden>
+      <fieldset class="chon-loi">
+        <legend>Chọn lời chúc ghi trên phong bì</legend>
+        <div class="hang-loi" id="hang-loi"></div>
+      </fieldset>
+      <p class="nd-dong">Nội dung chuyển khoản: <span id="nd-ck"></span></p>
       <button class="nut-gui nut-luu" id="nut-luu-qr" type="button">Lưu ảnh mã QR</button>
-      <p class="huong-dan">Mở ứng dụng ngân hàng, chọn quét mã QR rồi lấy ảnh vừa lưu. Cũng có thể nhấn giữ vào mã để lưu ảnh.</p>
+      <div class="hang-chep">
+        <button class="nut-chep" type="button" data-chep="stk">Chép số tài khoản</button>
+        <button class="nut-chep" type="button" data-chep="nd">Chép nội dung</button>
+      </div>
+      <p class="bi-bao" id="bi-bao" role="status" aria-live="polite"></p>
     </div>
   </section>
 

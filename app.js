@@ -733,7 +733,7 @@
   document.addEventListener('visibilitychange', () => setTimeout(capNhatNutNhac, 50));
 
   document.addEventListener('pointerdown', e => {
-    if (e.target.closest('a, button, input, textarea, label, select, output, .phieu, .phong-bi, .xem-anh, .phim')) return;
+    if (e.target.closest('a, button, input, textarea, label, select, output, .phieu, .bi-san, .bi-chi-tiet, .xem-anh, .phim')) return;
     HatBay.thoi(e.clientX, e.clientY);
   }, { passive: true });
 
@@ -741,7 +741,7 @@
   async function khoiDong() {
     $('#hoa-dau').innerHTML = HoaKho.bo(ALBUM ? HOA_DAU_ANH : HOA_DAU);
     $('#hoa-cam-on').innerHTML = HoaKho.bo(HOA_CAM_ON);
-    $('#niem-bi').innerHTML = svgNiem('nb');
+    $('#bi-niem').innerHTML = svgNiem('nb');
     capNhatMung();
     datAnhThiep();
     dungCatAnh();

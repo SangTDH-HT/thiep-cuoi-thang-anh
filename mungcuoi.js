@@ -1,12 +1,14 @@
-// Mừng cưới: mã VietQR (chuẩn EMVCo của NAPAS) vẽ ngay trên máy khách, không gọi dịch vụ ngoài.
-// Nội dung chuyển khoản = tên khách (bỏ dấu) + lời chúc. Cấu hình tài khoản ở config.js, mục mungCuoi.
+// Mừng cưới: phong bì đỏ ghi tay lời chúc + tên khách; chạm dấu niêm thì nắp mở, thiệp mã VietQR trồi lên.
+// Mã VietQR (chuẩn EMVCo của NAPAS) vẽ ngay trên máy khách, không gọi dịch vụ ngoài.
+// Nội dung chuyển khoản = tên khách (bỏ dấu) + "chuc <đôi> <lời chúc>". Cấu hình ở config.js, mục mungCuoi.
 (function () {
   'use strict';
 
   const CFG = (window.THIEP && window.THIEP.mungCuoi) || null;
   const $ = s => document.querySelector(s);
   const cho = ms => new Promise(r => setTimeout(r, ms));
-  const MAU_MA = '#2A2425';
+  const giam = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const NEN_MA = '#FFFDF8', MAU_MA = '#2A2425';
 
   // ---------- Chuỗi VietQR ----------
   const tlv = (id, v) => id + String(v.length).padStart(2, '0') + v;
@@ -32,116 +34,220 @@
       .replace(/đ/g, 'd').replace(/Đ/g, 'D')
       .replace(/[^A-Za-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
   }
-  function noiDung(ten) {
-    let t = boDau(ten);
-    if (t.length > 32) {
-      const c = t.slice(0, 33);
-      t = c.includes(' ') ? c.slice(0, c.lastIndexOf(' ')) : t.slice(0, 32);
-    }
-    return t ? `${t} ${CFG.loiChuc}` : CFG.loiChucKhongTen;
+  function catTen(t) {
+    t = boDau(t);
+    if (t.length <= 30) return t;
+    const c = t.slice(0, 31);
+    return c.includes(' ') ? c.slice(0, c.lastIndexOf(' ')) : t.slice(0, 30);
+  }
+
+  let ten = '', loi = 0, nd = '', chuoi = '';
+  function tinhNoiDung() {
+    const t = catTen(ten), doi = boDau(CFG.goiDoi), chuc = boDau(CFG.loiChuc[loi]).toLowerCase();
+    return t ? `${t} chuc ${doi} ${chuc}` : `Chuc ${doi} ${chuc}`;
   }
 
   // ---------- Vẽ mã ----------
-  function veMa(chuoi, px) {
+  function veMa(s, px) {
     const q = qrcode(0, 'M');
-    q.addData(chuoi, 'Byte');
+    q.addData(s, 'Byte');
     q.make();
     const n = q.getModuleCount(), le = 4, o = Math.max(2, Math.floor(px / (n + le * 2)));
     const c = document.createElement('canvas');
     c.width = c.height = (n + le * 2) * o;
     const g = c.getContext('2d');
-    g.fillStyle = '#FFFFFF';
+    g.fillStyle = NEN_MA;
     g.fillRect(0, 0, c.width, c.height);
     g.fillStyle = MAU_MA;
     for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) g.fillRect((k + le) * o, (r + le) * o, o, o);
     return c;
   }
 
-  let ndHienTai = null, chuoiHienTai = '';
-  function ve(ten) {
-    if (!CFG || !window.qrcode) return;
-    const nd = noiDung(ten);
-    if (nd === ndHienTai) return;
-    ndHienTai = nd;
-    chuoiHienTai = chuoiVietQR(nd);
-    $('#anh-qr').src = veMa(chuoiHienTai, 640).toDataURL('image/png');
+  function capNhat(doiChu) {
+    const loiEl = $('#bi-loi'), tuEl = $('#bi-tu');
+    loiEl.textContent = CFG.loiChuc[loi];
+    tuEl.textContent = ten;
+    tuEl.hidden = !ten;
+    if (doiChu && !giam) { loiEl.classList.remove('doi'); void loiEl.offsetWidth; loiEl.classList.add('doi'); }
+    const moi = tinhNoiDung();
+    if (moi === nd) return;
+    nd = moi;
+    chuoi = chuoiVietQR(nd);
+    $('#anh-qr').src = veMa(chuoi, 600).toDataURL('image/png');
     $('#nd-ck').textContent = nd;
   }
+  function ve(t) {
+    ten = String(t || '').trim().replace(/\s+/g, ' ');
+    if (CFG && window.qrcode) capNhat(false);
+  }
 
-  // ---------- Ảnh để lưu: thẻ mừng cưới có mã, tên chủ tài khoản, nội dung ----------
+  // ---------- Mở phong bì ----------
+  const san = $('#bi-san');
+  // Thiệp trồi lên tới khi mã QR, tên chủ tài khoản, số tài khoản đều vừa qua miệng phong bì
+  // (miệng hình chữ V, đáy chữ V sâu 110/368 chiều cao phong bì)
+  function doDat() {
+    const rb = $('#bi').getBoundingClientRect();
+    const w = rb.width, eh = rb.height, sau = eh * 110 / 368;
+    const mieng = x => Math.min(x, w - x) / (w / 2) * sau;
+    const daTroi = san.classList.contains('mo') ? parseFloat(san.style.getPropertyValue('--rise')) || 0 : 0;
+    let troi = 0;
+    for (const el of [$('#anh-qr'), $('#chu-tk'), $('#tk-dong')]) {
+      const r = el.getBoundingClientRect();
+      const day = r.bottom - rb.top + daTroi;
+      troi = Math.max(troi, day - (Math.min(mieng(r.left - rb.left), mieng(r.right - rb.left)) - 5));
+    }
+    const dinh = $('#bi-the').getBoundingClientRect().top - rb.top + daTroi - troi;
+    san.style.setProperty('--rise', troi.toFixed(1) + 'px');
+    san.style.setProperty('--san-mo', (eh + Math.max(0, -dinh) + 14).toFixed(1) + 'px');
+  }
+  function moBi() {
+    if (san.classList.contains('mo')) return;
+    doDat();
+    const n = $('#bi-niem').getBoundingClientRect();
+    san.classList.add('mo');
+    const nut = $('#bi-mo');
+    nut.setAttribute('aria-expanded', 'true');
+    nut.hidden = true;
+    $('#bi-goi-y').classList.add('an');
+    try { navigator.vibrate && navigator.vibrate([12, 60, 26]); } catch (e) { /* máy không hỗ trợ */ }
+    if (window.HatBay && !giam) {
+      HatBay.bung(n.left + n.width / 2, n.top + n.height / 2, { hat: 10, vun: 46, sao: 14, luc: 0.75 });
+      setTimeout(() => {
+        const b = $('#bi-the').getBoundingClientRect();
+        HatBay.tim(b.left + b.width / 2, b.top + b.height * 0.3, 8, true);
+      }, 1700);
+    }
+    setTimeout(() => {
+      const ct = $('#bi-chi-tiet');
+      $('#bi-goi-y').hidden = true;
+      ct.hidden = false;
+      requestAnimationFrame(() => requestAnimationFrame(() => ct.classList.add('hien')));
+    }, giam ? 0 : 1450);
+  }
+
+  // ---------- Ảnh để lưu: phong bì đỏ, thiệp mã QR, lời chúc ----------
   function xuongDong(g, chu, rong) {
-    const tu = chu.split(' '), dong = [];
+    const dong = [];
     let d = '';
-    for (const t of tu) {
+    for (const t of chu.split(' ')) {
       const thu = d ? d + ' ' + t : t;
       if (d && g.measureText(thu).width > rong) { dong.push(d); d = t; } else d = thu;
     }
     if (d) dong.push(d);
     return dong;
   }
-  function veTim(g, x, y, r) {
+  function nhuVang(g, x0, x1) {
+    const n = g.createLinearGradient(x0, 0, x1, 0);
+    [['0', '#C9A15E'], ['.22', '#F6E3B0'], ['.5', '#C29550'], ['.76', '#F1DA9F'], ['1', '#C79D5A']].forEach(([o, m]) => n.addColorStop(+o, m));
+    return n;
+  }
+  function veNiem(g, x, y, r) {
+    g.save();
+    g.shadowColor = 'rgba(40, 12, 8, .45)'; g.shadowBlur = 16; g.shadowOffsetY = 6;
+    const n = 26;
     g.beginPath();
-    g.moveTo(x, y + r * 0.9);
-    g.bezierCurveTo(x - r * 1.4, y - r * 0.05, x - r * 0.75, y - r * 1.1, x, y - r * 0.4);
-    g.bezierCurveTo(x + r * 0.75, y - r * 1.1, x + r * 1.4, y - r * 0.05, x, y + r * 0.9);
+    for (let i = 0; i < n; i++) {
+      const a0 = i / n * Math.PI * 2, a1 = (i + 1) / n * Math.PI * 2, am = (a0 + a1) / 2;
+      if (!i) g.moveTo(x + Math.cos(a0) * r * 0.885, y + Math.sin(a0) * r * 0.885);
+      g.quadraticCurveTo(x + Math.cos(am) * r, y + Math.sin(am) * r, x + Math.cos(a1) * r * 0.885, y + Math.sin(a1) * r * 0.885);
+    }
+    const gr = g.createRadialGradient(x - r * 0.3, y - r * 0.4, r * 0.05, x, y, r * 1.05);
+    gr.addColorStop(0, '#F8EBC6'); gr.addColorStop(0.4, '#D8B676'); gr.addColorStop(0.75, '#A9834A'); gr.addColorStop(1, '#7A5A2E');
+    g.fillStyle = gr;
     g.fill();
+    g.restore();
+    g.strokeStyle = 'rgba(122, 90, 46, .6)'; g.lineWidth = 2;
+    g.beginPath(); g.arc(x, y, r * 0.74, 0, Math.PI * 2); g.stroke();
+    g.fillStyle = '#5E4420';
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    chuVua(g, 'T&A', Math.round(r * 0.7), co => `400 ${co}px Ephesis, cursive`, r * 1.1);
+    g.fillText('T&A', x, y + r * 0.04);
+    g.textBaseline = 'alphabetic';
+  }
+  function chuVua(g, chu, coGoc, kieu, rong) {
+    let co = coGoc;
+    g.font = kieu(co);
+    const w = g.measureText(chu).width;
+    if (w > rong) { co = Math.floor(co * rong / w); g.font = kieu(co); }
   }
   function veThe() {
-    const W = 1080, H = 1560;
+    const ma = veMa(chuoi, 640);
+    const W = 1080, tx = 150, tw = W - 300, ty = 350, th = 70 + ma.height + 170;
+    const H = ty + th + 400;
     const c = document.createElement('canvas');
     c.width = W; c.height = H;
     const g = c.getContext('2d');
-    g.fillStyle = '#EEF0F3';
+
+    // Phong bì đỏ, nếp gấp đáy
+    const nen = g.createLinearGradient(0, 0, W * 0.45, H);
+    nen.addColorStop(0, '#AE483F'); nen.addColorStop(0.55, '#9A3A33'); nen.addColorStop(1, '#84302A');
+    g.fillStyle = nen;
     g.fillRect(0, 0, W, H);
-    g.strokeStyle = 'rgba(169, 132, 78, .7)';
-    g.lineWidth = 2.5; g.strokeRect(34, 34, W - 68, H - 68);
-    g.lineWidth = 1.2; g.strokeRect(46, 46, W - 92, H - 92);
+    g.save();
+    g.shadowColor = 'rgba(50, 10, 8, .4)'; g.shadowBlur = 22; g.shadowOffsetY = -5;
+    g.fillStyle = '#A0403A';
+    g.beginPath(); g.moveTo(0, H); g.lineTo(W / 2, H * 0.5); g.lineTo(W, H); g.closePath(); g.fill();
+    g.restore();
+    const nhu = nhuVang(g, 0, W);
+    g.strokeStyle = nhu;
+    g.lineWidth = 3; g.strokeRect(34, 34, W - 68, H - 68);
+    g.lineWidth = 1.2; g.strokeRect(48, 48, W - 96, H - 96);
 
     g.textAlign = 'center';
-    g.textBaseline = 'alphabetic';
-    g.fillStyle = '#7E5F33';
-    let co = 108;
-    g.font = `400 ${co}px Ephesis, cursive`;
-    const doi = CFG.tenDoi;
-    const rongDoi = g.measureText(doi).width;
-    if (rongDoi > 900) { co = Math.floor(co * 900 / rongDoi); g.font = `400 ${co}px Ephesis, cursive`; }
-    g.fillText(doi, W / 2, 196);
-    g.fillStyle = '#675E60';
+    g.fillStyle = nhu;
+    chuVua(g, CFG.tenDoi, 104, co => `400 ${co}px Ephesis, cursive`, 900);
+    g.fillText(CFG.tenDoi, W / 2, 196);
+    g.fillStyle = '#F2DDB0';
     g.font = 'italic 400 40px "EB Garamond", Georgia, serif';
     g.fillText(CFG.dongNgay, W / 2, 262);
 
-    // Tờ giấy trắng chứa mã
-    const ts = 800, tx = (W - ts) / 2, ty = 310;
+    // Thiệp ngà chứa mã
     g.save();
-    g.shadowColor = 'rgba(60, 45, 30, .22)'; g.shadowBlur = 30; g.shadowOffsetY = 12;
-    g.fillStyle = '#FFFFFF';
-    g.fillRect(tx, ty, ts, ts);
+    g.shadowColor = 'rgba(40, 10, 6, .45)'; g.shadowBlur = 40; g.shadowOffsetY = 18;
+    g.fillStyle = NEN_MA;
+    g.fillRect(tx, ty, tw, th);
     g.restore();
-    g.strokeStyle = 'rgba(169, 132, 78, .55)'; g.lineWidth = 1.5;
-    g.strokeRect(tx + 14, ty + 14, ts - 28, ts - 28);
-    const ma = veMa(chuoiHienTai, 740);
+    g.strokeStyle = 'rgba(169, 132, 78, .6)'; g.lineWidth = 1.5;
+    g.strokeRect(tx + 14, ty + 14, tw - 28, th - 28);
     g.imageSmoothingEnabled = false;
-    g.drawImage(ma, Math.round(tx + (ts - ma.width) / 2), Math.round(ty + (ts - ma.height) / 2));
+    g.drawImage(ma, Math.round((W - ma.width) / 2), ty + 70);
+    g.imageSmoothingEnabled = true;
+    veNiem(g, W / 2, ty, 60);
 
-    let y = ty + ts + 92;
+    let y = ty + 70 + ma.height + 62;
     g.fillStyle = '#3B3536';
-    g.font = '600 52px "EB Garamond", Georgia, serif';
+    g.font = '600 50px "EB Garamond", Georgia, serif';
     g.fillText(CFG.chuTk, W / 2, y);
-    y += 58;
-    g.fillStyle = '#675E60';
-    g.font = 'italic 400 38px "EB Garamond", Georgia, serif';
-    g.fillText(`Ngân hàng ${CFG.nganHang}`, W / 2, y);
     y += 62;
+    const a = CFG.nganHang + '  ', b = CFG.soTk;
+    g.font = 'italic 400 40px "EB Garamond", Georgia, serif';
+    const wa = g.measureText(a).width;
+    g.font = '500 42px "EB Garamond", Georgia, serif';
+    const wb = g.measureText(b).width;
+    g.textAlign = 'left';
+    g.fillStyle = '#675E60';
+    g.font = 'italic 400 40px "EB Garamond", Georgia, serif';
+    g.fillText(a, (W - wa - wb) / 2, y);
     g.fillStyle = '#2C3A5E';
-    g.font = '500 46px "EB Garamond", Georgia, serif';
-    g.fillText(`Số tài khoản ${CFG.soTk}`, W / 2, y);
-    y += 46;
-    g.fillStyle = '#B8433C';
-    veTim(g, W / 2, y, 13);
-    y += 62;
-    g.fillStyle = '#675E60';
-    g.font = 'italic 400 36px "EB Garamond", Georgia, serif';
-    for (const d of xuongDong(g, `Nội dung: ${ndHienTai}`, 860)) { g.fillText(d, W / 2, y); y += 46; }
+    g.font = '500 42px "EB Garamond", Georgia, serif';
+    g.fillText(b, (W - wa - wb) / 2 + wa, y);
+    g.textAlign = 'center';
+
+    // Lời chúc ghi tay trên phong bì
+    y = ty + th + 130;
+    g.fillStyle = nhu;
+    chuVua(g, CFG.loiChuc[loi], 92, co => `400 ${co}px Ephesis, cursive`, 900);
+    g.fillText(CFG.loiChuc[loi], W / 2, y);
+    if (ten) {
+      y += 70;
+      g.fillStyle = '#F2DDB0';
+      chuVua(g, ten, 44, co => `italic 400 ${co}px "EB Garamond", Georgia, serif`, 860);
+      g.fillText(ten, W / 2, y);
+    }
+    y += 66;
+    g.fillStyle = 'rgba(242, 221, 176, .78)';
+    g.font = 'italic 400 30px "EB Garamond", Georgia, serif';
+    for (const d of xuongDong(g, 'Nội dung chuyển khoản: ' + nd, 880)) { g.fillText(d, W / 2, y); y += 40; }
     return c;
   }
 
@@ -161,45 +267,48 @@
     return ok;
   }
   function baoNut(nut, chu, ok) {
-    const nhan = nut.querySelector('.chu-nut') || nut;
-    if (!nut.dataset.goc) nut.dataset.goc = nhan.textContent;
-    nhan.textContent = chu;
+    if (!nut.dataset.goc) nut.dataset.goc = nut.textContent;
+    nut.textContent = chu;
     nut.classList.toggle('xong', ok);
     clearTimeout(nut._hen);
-    nut._hen = setTimeout(() => { nhan.textContent = nut.dataset.goc; nut.classList.remove('xong'); }, 2000);
+    nut._hen = setTimeout(() => { nut.textContent = nut.dataset.goc; nut.classList.remove('xong'); }, 2000);
   }
+  const bao = chu => { $('#bi-bao').textContent = chu; };
 
   async function luuAnh(nut) {
-    if (!chuoiHienTai) return;
+    if (!chuoi) return;
     nut.disabled = true;
     try {
       await Promise.race([
-        Promise.all(['400 108px Ephesis', '600 52px "EB Garamond"', 'italic 400 38px "EB Garamond"', '500 46px "EB Garamond"']
+        Promise.all(['400 104px Ephesis', '600 50px "EB Garamond"', 'italic 400 40px "EB Garamond"', '500 42px "EB Garamond"']
           .map(f => document.fonts.load(f, 'Ngọc Ánh 0123'))),
         cho(2500)
       ]);
     } catch (e) { /* dùng font dự phòng */ }
     try {
-      const c = veThe();
-      const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+      const blob = await new Promise(r => veThe().toBlob(r, 'image/png'));
       if (!blob) throw new Error('không tạo được ảnh');
-      const ten = CFG.tenTep || 'mung-cuoi.png';
-      const tep = new File([blob], ten, { type: 'image/png' });
+      const tenTep = CFG.tenTep || 'mung-cuoi.png';
+      const tep = new File([blob], tenTep, { type: 'image/png' });
       // Điện thoại: mở bảng chia sẻ để "Lưu hình ảnh"; máy tính: tải thẳng về
       if (matchMedia('(pointer: coarse)').matches && navigator.canShare && navigator.canShare({ files: [tep] })) {
-        try { await navigator.share({ files: [tep] }); } catch (e) { /* khách đóng bảng chia sẻ */ }
+        try {
+          await navigator.share({ files: [tep] });
+          bao('Mở ứng dụng ngân hàng, chọn quét mã QR và lấy ảnh vừa lưu.');
+        } catch (e) { /* khách đóng bảng chia sẻ */ }
       } else {
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = ten;
+        a.download = tenTep;
         document.body.appendChild(a);
         a.click();
         a.remove();
         setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-        baoNut(nut, 'Đã tải ảnh về máy', true);
+        baoNut(nut, 'Đã lưu ảnh', true);
+        bao('Mở ứng dụng ngân hàng, chọn quét mã QR và lấy ảnh vừa lưu.');
       }
     } catch (e) {
-      baoNut(nut, 'Chưa lưu được, xin nhấn giữ vào mã', false);
+      bao('Chưa lưu được ảnh. Xin nhấn giữ vào mã QR để lưu.');
     }
     nut.disabled = false;
   }
@@ -208,13 +317,26 @@
     const sec = $('#mung-cuoi');
     if (!sec) return;
     if (!CFG || !window.qrcode) { sec.hidden = true; return; }
+    $('#the-doi').textContent = CFG.goiDoi;
     $('#chu-tk').textContent = CFG.chuTk;
-    $('#ngan-hang').textContent = `Ngân hàng ${CFG.nganHang}`;
+    $('#ngan-hang').textContent = CFG.nganHang;
     $('#so-tk').textContent = CFG.soTk;
-    $('#anh-qr').alt = `Mã QR chuyển khoản ${CFG.nganHang} tới ${CFG.chuTk}`;
+    $('#anh-qr').alt = `Mã QR chuyển khoản ${CFG.nganHang} tới ${CFG.chuTk}, số tài khoản ${CFG.soTk}`;
+
+    const hang = $('#hang-loi');
+    CFG.loiChuc.forEach((c, i) => {
+      const l = document.createElement('label');
+      l.className = 'loi-o';
+      l.innerHTML = `<input type="radio" name="loi-chuc" value="${i}"${i ? '' : ' checked'}><span></span>`;
+      l.querySelector('span').textContent = c;
+      hang.appendChild(l);
+    });
+    hang.addEventListener('change', e => { loi = Number(e.target.value) || 0; capNhat(true); });
+
+    $('#bi-mo').addEventListener('click', moBi);
+    addEventListener('resize', () => { if (san.classList.contains('mo')) doDat(); });
     document.querySelectorAll('.nut-chep').forEach(nut => nut.addEventListener('click', async () => {
-      const chu = $('#' + nut.dataset.chep).textContent.trim();
-      const ok = await chepChu(chu);
+      const ok = await chepChu(nut.dataset.chep === 'stk' ? CFG.soTk : nd);
       baoNut(nut, ok ? 'Đã chép' : 'Chưa chép được', ok);
     }));
     $('#nut-luu-qr').addEventListener('click', e => luuAnh(e.currentTarget));
@@ -222,5 +344,5 @@
   }
   dung();
 
-  window.MungCuoi = { ve, noiDung, chuoiVietQR };
+  window.MungCuoi = { ve, chuoiVietQR, mo: moBi };
 })();
