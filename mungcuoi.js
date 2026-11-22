@@ -20,8 +20,9 @@
     }
     return c.toString(16).toUpperCase().padStart(4, '0');
   }
-  function chuoiVietQR(nd) {
-    const tk = tlv('00', 'A000000727') + tlv('01', tlv('00', CFG.bin) + tlv('01', CFG.soTk)) + tlv('02', 'QRIBFTTA');
+  function chuoiVietQR(nd, a) {
+    a = a || TK[chon];
+    const tk = tlv('00', 'A000000727') + tlv('01', tlv('00', a.bin) + tlv('01', a.soTk)) + tlv('02', 'QRIBFTTA');
     let s = tlv('00', '01') + tlv('01', nd ? '12' : '11') + tlv('38', tk) + tlv('53', '704') + tlv('58', 'VN');
     if (nd) s += tlv('62', tlv('08', nd));
     s += '6304';
@@ -41,7 +42,10 @@
     return c.includes(' ') ? c.slice(0, c.lastIndexOf(' ')) : t.slice(0, 30);
   }
 
-  let ten = '', loi = 0, nd = '', chuoi = '';
+  // Tài khoản nhận: chon = vị trí trong CFG.taiKhoan; khách tự bấm chọn thì không đổi theo bên nữa
+  const TK = (CFG && CFG.taiKhoan) || [];
+  let chon = 0, tuChon = false;
+  let ten = '', loi = 0, nd = '', chuoi = '', khoa = '';
   function tinhNoiDung() {
     const t = catTen(ten), doi = boDau(CFG.goiDoi), chuc = boDau(CFG.loiChuc[loi]).toLowerCase();
     return t ? `${t} chuc ${doi} ${chuc}` : `Chuc ${doi} ${chuc}`;
@@ -63,22 +67,41 @@
     return c;
   }
 
-  function capNhat(doiChu) {
-    const loiEl = $('#bi-loi'), tuEl = $('#bi-tu');
+  const nhayLai = el => { if (giam) return; el.classList.remove('doi'); void el.offsetWidth; el.classList.add('doi'); };
+  function capNhat(doiChu, doiTk) {
+    const loiEl = $('#bi-loi'), tuEl = $('#bi-tu'), a = TK[chon];
     loiEl.textContent = CFG.loiChuc[loi];
     tuEl.textContent = ten;
     tuEl.hidden = !ten;
-    if (doiChu && !giam) { loiEl.classList.remove('doi'); void loiEl.offsetWidth; loiEl.classList.add('doi'); }
+    if (doiChu) nhayLai(loiEl);
+    $('#chu-tk').textContent = a.chuTk;
+    $('#ngan-hang').textContent = a.nganHang;
+    $('#so-tk').textContent = a.soTk;
+    $('#anh-qr').alt = `Mã QR chuyển khoản ${a.nganHang} tới ${a.chuTk}, số tài khoản ${a.soTk}`;
+    document.querySelectorAll('#hang-tk input').forEach(r => { r.checked = Number(r.value) === chon; });
     const moi = tinhNoiDung();
-    if (moi === nd) return;
+    if (moi + '|' + chon === khoa) return;
+    khoa = moi + '|' + chon;
     nd = moi;
     chuoi = chuoiVietQR(nd);
     $('#anh-qr').src = veMa(chuoi, 600).toDataURL('image/png');
     $('#nd-ck').textContent = nd;
+    if (doiTk) {
+      nhayLai($('#anh-qr'));
+      nhayLai($('#bi-the figcaption'));
+      if (san.classList.contains('mo')) doDat();
+    }
   }
-  function ve(t) {
+  // ben: 'Nhà trai' / 'Nhà gái' lấy từ link mời hoặc phiếu xác nhận
+  function ve(t, ben) {
     ten = String(t || '').trim().replace(/\s+/g, ' ');
-    if (CFG && window.qrcode) capNhat(false);
+    if (!CFG || !window.qrcode || !TK.length) return;
+    let doiTk = false;
+    if (!tuChon && ben) {
+      const i = TK.findIndex(a => a.ben === ben);
+      if (i >= 0 && i !== chon) { chon = i; doiTk = true; }
+    }
+    capNhat(false, doiTk);
   }
 
   // ---------- Mở phong bì ----------
@@ -214,12 +237,13 @@
     g.imageSmoothingEnabled = true;
     veNiem(g, W / 2, ty, 60);
 
+    const nhan = TK[chon];
     let y = ty + 70 + ma.height + 62;
     g.fillStyle = '#3B3536';
     g.font = '600 50px "EB Garamond", Georgia, serif';
-    g.fillText(CFG.chuTk, W / 2, y);
+    g.fillText(nhan.chuTk, W / 2, y);
     y += 62;
-    const a = CFG.nganHang + '  ', b = CFG.soTk;
+    const a = nhan.nganHang + '  ', b = nhan.soTk;
     g.font = 'italic 400 40px "EB Garamond", Georgia, serif';
     const wa = g.measureText(a).width;
     g.font = '500 42px "EB Garamond", Georgia, serif';
@@ -316,27 +340,28 @@
   function dung() {
     const sec = $('#mung-cuoi');
     if (!sec) return;
-    if (!CFG || !window.qrcode) { sec.hidden = true; return; }
+    if (!CFG || !window.qrcode || !TK.length) { sec.hidden = true; return; }
     $('#the-doi').textContent = CFG.goiDoi;
-    $('#chu-tk').textContent = CFG.chuTk;
-    $('#ngan-hang').textContent = CFG.nganHang;
-    $('#so-tk').textContent = CFG.soTk;
-    $('#anh-qr').alt = `Mã QR chuyển khoản ${CFG.nganHang} tới ${CFG.chuTk}, số tài khoản ${CFG.soTk}`;
 
-    const hang = $('#hang-loi');
-    CFG.loiChuc.forEach((c, i) => {
+    const nutChon = (hang, ten, nhan) => nhan.forEach((c, i) => {
       const l = document.createElement('label');
       l.className = 'loi-o';
-      l.innerHTML = `<input type="radio" name="loi-chuc" value="${i}"${i ? '' : ' checked'}><span></span>`;
+      l.innerHTML = `<input type="radio" name="${ten}" value="${i}"${i ? '' : ' checked'}><span></span>`;
       l.querySelector('span').textContent = c;
       hang.appendChild(l);
     });
+    const hangTk = $('#hang-tk');
+    nutChon(hangTk, 'gui-toi', TK.map(a => `${a.ai} ${a.ten}`));
+    $('#chon-tk').hidden = TK.length < 2;
+    hangTk.addEventListener('change', e => { chon = Number(e.target.value) || 0; tuChon = true; capNhat(false, true); });
+    const hang = $('#hang-loi');
+    nutChon(hang, 'loi-chuc', CFG.loiChuc);
     hang.addEventListener('change', e => { loi = Number(e.target.value) || 0; capNhat(true); });
 
     $('#bi-mo').addEventListener('click', moBi);
     addEventListener('resize', () => { if (san.classList.contains('mo')) doDat(); });
     document.querySelectorAll('.nut-chep').forEach(nut => nut.addEventListener('click', async () => {
-      const ok = await chepChu(nut.dataset.chep === 'stk' ? CFG.soTk : nd);
+      const ok = await chepChu(nut.dataset.chep === 'stk' ? TK[chon].soTk : nd);
       baoNut(nut, ok ? 'Đã chép' : 'Chưa chép được', ok);
     }));
     $('#nut-luu-qr').addEventListener('click', e => luuAnh(e.currentTarget));

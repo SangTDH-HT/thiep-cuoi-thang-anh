@@ -606,7 +606,7 @@ body.co-anh .vom { padding-top: 12px; }
   -webkit-background-clip: text; background-clip: text; color: transparent;
   filter: drop-shadow(0 1px 0 rgba(60, 12, 8, .55));
 }
-.bi-loi.doi { animation: doi-loi .6s ease; }
+.bi-loi.doi, .bi-the img.doi, .bi-the figcaption.doi { animation: doi-loi .6s ease; }
 @keyframes doi-loi { from { opacity: 0; transform: translateY(5px) scale(.96); } }
 .bi-tu { margin: 2px 0 0; font: italic 400 calc(var(--w) * .058)/1.3 var(--chu-in); color: #F2DDB0; overflow-wrap: anywhere; }
 /* Nắp: mặt ngoài đỏ, lật lên thì thấy mặt trong lót hoa văn */
@@ -656,6 +656,7 @@ body.co-anh .vom { padding-top: 12px; }
 }
 .bi-chi-tiet.hien { opacity: 1; transform: none; }
 .chon-loi { min-width: 0; margin: 0; padding: 0; border: 0; }
+.chon-tk { margin-bottom: 18px; }
 .chon-loi legend { display: block; width: 100%; margin: 0 0 10px; padding: 0; font: italic 16.5px/1.4 var(--chu-in); color: var(--muc-nhat); }
 .hang-loi { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .loi-o { position: relative; cursor: pointer; }

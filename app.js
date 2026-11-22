@@ -47,7 +47,7 @@
   function capNhatMung() {
     if (!window.MungCuoi) return;
     const xn = kho.doc('xn');
-    MungCuoi.ve(khach && !khach.chung ? khach.ten : (xn && xn.ten) || '');
+    MungCuoi.ve(khach && !khach.chung ? khach.ten : (xn && xn.ten) || '', (khach && khach.ben) || (xn && xn.ben) || '');
   }
   // Tên dài thì thu nhỏ cho vừa dòng chấm
   function vuaKhung() {
